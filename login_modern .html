@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE WORKS - 現代簡約登入</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            background-color: #ffffff;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 語言切換 */
+        .language-switcher {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 10;
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .lang-btn:hover {
+            color: #111827;
+        }
+
+        .chevron {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        /* 主容器 */
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* 標題區域 */
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* 表單 */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .form-input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 0;
+            font-size: 14px;
+            color: #111827;
+            background-color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #dc2626;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* 按鈕 */
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #1e40af;
+            color: #ffffff;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e3a8a;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 底部 */
+        .footer {
+            padding: 24px 16px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+            background-color: #ffffff;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: 16px;
+                right: 16px;
+            }
+
+            .main {
+                padding: 24px 16px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 語言切換 -->
+        <div class="language-switcher">
+            <button class="lang-btn" onclick="toggleLanguage()">
+                <span id="langText">中文</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 主容器 -->
+        <div class="main">
+            <div class="card">
+                <!-- 標題區域 -->
+                <div class="header">
+                    <h1 class="title">LINE WORKS</h1>
+                    <p class="subtitle" id="subtitle">企業通訊與協作平台</p>
+                </div>
+
+                <!-- 登入表單 -->
+                <form class="form" onsubmit="handleSubmit(event)">
+                    <!-- 組織代號輸入 -->
+                    <div class="form-group">
+                        <label class="form-label" for="orgCode" id="labelOrgCode">組織代號</label>
+                        <input 
+                            class="form-input" 
+                            id="orgCode" 
+                            type="text" 
+                            placeholder="請輸入組織代號"
+                            autocomplete="off"
+                        >
+                        <div class="error-message" id="errorMessage"></div>
+                    </div>
+
+                    <!-- LINE WORKS 登入按鈕 -->
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        使用LINE WORKS登入
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="footer">
+            <p class="footer-text" id="footerText">© 2026 LINE WORKS. 保留所有權利。</p>
+        </div>
+    </div>
+
+    <script>
+        // 多語言翻譯
+        const translations = {
+            zh: {
+                subtitle: "企業通訊與協作平台",
+                labelOrgCode: "組織代號",
+                placeholderOrgCode: "請輸入組織代號",
+                submitBtn: "使用LINE WORKS登入",
+                footerText: "© 2026 LINE WORKS. 保留所有權利。",
+                errorRequired: "組織代號為必填項",
+                submitting: "登入中..."
+            },
+            en: {
+                subtitle: "Enterprise Communication & Collaboration",
+                labelOrgCode: "Organization Code",
+                placeholderOrgCode: "Enter your organization code",
+                submitBtn: "Sign in with LINE WORKS",
+                footerText: "© 2026 LINE WORKS. All rights reserved.",
+                errorRequired: "Organization code is required",
+                submitting: "Signing in..."
+            }
+        };
+
+        let currentLanguage = 'zh';
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            document.getElementById('langText').textContent = currentLanguage === 'zh' ? '中文' : 'EN';
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('labelOrgCode').textContent = t.labelOrgCode;
+            document.getElementById('orgCode').placeholder = t.placeholderOrgCode;
+            document.getElementById('submitBtn').textContent = t.submitBtn;
+            document.getElementById('footerText').textContent = t.footerText;
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const orgCode = document.getElementById('orgCode').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            const t = translations[currentLanguage];
+
+            errorMessage.classList.remove('show');
+
+            if (!orgCode) {
+                errorMessage.textContent = t.errorRequired;
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // 模擬登入流程
+            submitBtn.disabled = true;
+            submitBtn.textContent = t.submitting;
+
+            setTimeout(() => {
+                console.log('Redirecting to LINE WORKS login with code:', orgCode);
+                // 這裡會實際跳轉到LINE WORKS登入頁面
+                alert(`組織代號: ${orgCode}\n\n實際應用中，這裡會跳轉到LINE WORKS登入頁面。`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = t.submitBtn;
+            }, 1000);
+        }
+
+        // 清除錯誤訊息
+        document.getElementById('orgCode').addEventListener('input', () => {
+            document.getElementById('errorMessage').classList.remove('show');
+        });
+    </script>
+</body>
+</html>
