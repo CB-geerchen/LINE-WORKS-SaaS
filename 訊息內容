@@ -1,0 +1,541 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--color-background-tertiary);color:var(--color-text-primary)}
+.page{display:grid;grid-template-columns:1fr 380px;gap:24px;padding:24px;min-height:600px}
+.left{display:flex;flex-direction:column;gap:16px}
+.right{background:var(--color-background-primary);border-radius:16px;border:.5px solid var(--color-border-tertiary);overflow:hidden;display:flex;flex-direction:column}
+
+/* 步驟標頭 */
+.step-header{display:flex;align-items:center;gap:10px;padding:0 0 4px}
+.step-num{width:24px;height:24px;border-radius:50%;background:#085041;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+
+/* 格式選擇卡片 */
+.format-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fmt-card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:10px;padding:12px 8px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.fmt-card:hover{border-color:#0F6E56;background:#F0FAF6}
+.fmt-card.active{border-color:#0F6E56;border-width:1.5px;background:#E1F5EE}
+.fmt-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--color-background-secondary)}
+.fmt-card.active .fmt-icon{background:#9FE1CB}
+.fmt-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-align:center}
+.fmt-card.active .fmt-label{color:#085041}
+
+/* 設定區 */
+.config-box{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.config-section{display:flex;flex-direction:column;gap:6px}
+.config-label{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
+.config-label span{color:var(--color-text-danger);margin-left:2px}
+.config-input{background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--color-text-primary);width:100%;outline:none;font-family:inherit;transition:border-color .15s}
+.config-input:focus{border-color:#0F6E56}
+textarea.config-input{resize:vertical;min-height:72px;line-height:1.5}
+.config-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.upload-zone{border:.5px dashed var(--color-border-secondary);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .15s;background:var(--color-background-secondary)}
+.upload-zone:hover{border-color:#0F6E56;background:#F0FAF6}
+.upload-icon{font-size:24px;margin-bottom:4px}
+.upload-text{font-size:12px;color:var(--color-text-tertiary)}
+.upload-text strong{color:#0F6E56;font-weight:500}
+.var-chips{display:flex;flex-wrap:wrap;gap:5px}
+.var-chip{background:#E1F5EE;color:#085041;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;cursor:pointer;border:.5px solid #9FE1CB;transition:background .1s}
+.var-chip:hover{background:#9FE1CB}
+.btn-group{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.btn-item{background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:8px 6px;display:flex;flex-direction:column;gap:4px}
+.btn-item-label{font-size:10px;color:var(--color-text-tertiary)}
+.btn-item input,.btn-item select{background:transparent;border:none;outline:none;font-size:12px;color:var(--color-text-primary);width:100%;font-family:inherit}
+.add-btn{background:var(--color-background-secondary);border:.5px dashed var(--color-border-secondary);border-radius:8px;padding:8px;font-size:12px;color:var(--color-text-tertiary);cursor:pointer;text-align:center;transition:all .15s}
+.add-btn:hover{border-color:#0F6E56;color:#0F6E56}
+.qr-toggle{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--color-background-secondary);border-radius:8px;cursor:pointer}
+.qr-label{font-size:12px;color:var(--color-text-secondary);flex:1}
+.toggle{width:32px;height:18px;border-radius:9px;background:var(--color-border-secondary);position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#0F6E56}
+.toggle::after{content:'';width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s}
+.toggle.on::after{transform:translateX(14px)}
+
+/* 右側預覽 */
+.preview-header{padding:14px 16px;border-bottom:.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.preview-title{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
+.preview-device{display:flex;gap:4px}
+.dev-btn{font-size:10px;padding:3px 8px;border-radius:99px;border:.5px solid var(--color-border-tertiary);background:transparent;cursor:pointer;color:var(--color-text-tertiary);transition:all .15s}
+.dev-btn.active{background:#085041;color:#fff;border-color:#085041}
+.preview-body{flex:1;padding:16px;background:#E8F5E9;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.chat-row{display:flex;gap:8px;align-items:flex-end}
+.bot-avatar{width:32px;height:32px;border-radius:50%;background:#085041;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.bubble-wrap{display:flex;flex-direction:column;gap:3px;max-width:240px}
+.bubble{background:#fff;border-radius:0 12px 12px 12px;padding:10px 12px;font-size:13px;line-height:1.5;color:#333;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.bubble-name{font-size:10px;color:#666;padding-left:2px}
+.bubble-time{font-size:10px;color:#999;align-self:flex-end}
+.img-bubble{width:200px;height:130px;border-radius:0 12px 12px 12px;background:#ddd;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}
+.file-bubble{background:#fff;border-radius:0 12px 12px 12px;padding:10px 12px;display:flex;align-items:center;gap:8px;min-width:160px}
+.file-icon{width:32px;height:32px;background:#E1F5EE;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.file-info{flex:1}
+.file-name{font-size:12px;font-weight:500;color:#333}
+.file-size{font-size:10px;color:#999}
+.link-bubble{background:#fff;border-radius:0 12px 12px 12px;overflow:hidden;width:220px}
+.link-thumb{height:80px;background:linear-gradient(135deg,#085041,#1D9E75);display:flex;align-items:center;justify-content:center;font-size:24px}
+.link-content{padding:8px 10px}
+.link-title{font-size:12px;font-weight:500;color:#333}
+.link-url{font-size:10px;color:#0F6E56;margin-top:2px}
+.btn-template{background:#fff;border-radius:0 12px 12px 12px;overflow:hidden;width:220px}
+.btn-thumb{height:90px;background:linear-gradient(135deg,#1D9E75,#085041);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px}
+.btn-content{padding:10px}
+.btn-ttl{font-size:13px;font-weight:500;color:#333}
+.btn-desc{font-size:11px;color:#666;margin-top:3px}
+.btn-actions{border-top:.5px solid #eee;margin-top:8px}
+.btn-action-item{padding:8px 10px;text-align:center;font-size:12px;color:#0F6E56;border-bottom:.5px solid #eee;cursor:pointer}
+.btn-action-item:last-child{border-bottom:none}
+.list-bubble{background:#fff;border-radius:0 12px 12px 12px;overflow:hidden;width:220px}
+.list-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:.5px solid #eee}
+.list-item:last-child{border-bottom:none}
+.list-item-icon{width:28px;height:28px;border-radius:6px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:14px}
+.list-item-text{flex:1}
+.list-item-title{font-size:12px;font-weight:500;color:#333}
+.list-item-desc{font-size:10px;color:#666}
+.carousel-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;max-width:280px}
+.carousel-card{background:#fff;border-radius:8px;overflow:hidden;min-width:140px;flex-shrink:0}
+.carousel-img{height:80px;background:linear-gradient(135deg,#1D9E75,#0F6E56);display:flex;align-items:center;justify-content:center;font-size:20px}
+.carousel-content{padding:8px}
+.carousel-title{font-size:11px;font-weight:500;color:#333}
+.carousel-desc{font-size:10px;color:#666;margin-top:2px}
+.carousel-btn{margin-top:6px;padding:5px;background:#E1F5EE;border-radius:4px;text-align:center;font-size:10px;color:#085041}
+.qr-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.qr-btn{background:#fff;border:.5px solid #ddd;border-radius:16px;padding:5px 10px;font-size:11px;color:#333}
+.preview-footer{padding:12px 16px;border-top:.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.pf-note{font-size:11px;color:var(--color-text-tertiary);text-align:center}
+
+/* 底部按鈕 */
+.action-bar{display:flex;gap:8px;justify-content:flex-end}
+.btn-secondary{padding:8px 16px;border-radius:8px;border:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;font-family:inherit}
+.btn-primary{padding:8px 20px;border-radius:8px;border:none;background:#085041;font-size:13px;color:#fff;cursor:pointer;font-family:inherit;font-weight:500}
+.hidden{display:none}
+.format-badge{position:absolute;top:6px;right:6px;background:#534AB7;color:#fff;font-size:9px;padding:1px 5px;border-radius:99px}
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<div class="page">
+  <div class="left">
+
+    <!-- 步驟標題 -->
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div class="step-title">訊息內容</div>
+    </div>
+
+    <!-- 格式選擇 -->
+    <div class="config-box" style="gap:10px">
+      <div class="config-label">訊息格式</div>
+      <div class="format-grid" id="formatGrid">
+        <div class="fmt-card active" data-fmt="text" onclick="setFormat('text')">
+          <div class="fmt-icon">💬</div>
+          <div class="fmt-label">文字</div>
+        </div>
+        <div class="fmt-card" data-fmt="image" onclick="setFormat('image')">
+          <div class="fmt-icon">🖼️</div>
+          <div class="fmt-label">圖片</div>
+        </div>
+        <div class="fmt-card" data-fmt="file" onclick="setFormat('file')">
+          <div class="fmt-icon">📎</div>
+          <div class="fmt-label">檔案</div>
+        </div>
+        <div class="fmt-card" data-fmt="link" onclick="setFormat('link')">
+          <div class="fmt-icon">🔗</div>
+          <div class="fmt-label">連結</div>
+        </div>
+        <div class="fmt-card" data-fmt="button" onclick="setFormat('button')">
+          <div class="fmt-icon">🔘</div>
+          <div class="fmt-label">按鈕範本</div>
+        </div>
+        <div class="fmt-card" data-fmt="list" onclick="setFormat('list')">
+          <div class="fmt-icon">📋</div>
+          <div class="fmt-label">列表範本</div>
+        </div>
+        <div class="fmt-card" data-fmt="carousel" onclick="setFormat('carousel')">
+          <div class="fmt-icon">🎠</div>
+          <div class="fmt-label">輪播圖</div>
+        </div>
+        <div class="fmt-card" data-fmt="template" onclick="setFormat('template')">
+          <div class="fmt-icon">⭐</div>
+          <div class="fmt-label">套用範本</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 動態設定區 -->
+    <div class="config-box" id="configArea">
+
+      <!-- 文字 -->
+      <div id="cfg-text">
+        <div class="config-section">
+          <div class="config-label">訊息內容<span>*</span></div>
+          <textarea class="config-input" placeholder="輸入訊息內容..." oninput="updatePreview()" id="textContent">您好 {{姓名}}，這是來自 HR 的重要通知，請留意查看。</textarea>
+        </div>
+        <div class="config-section" style="margin-top:8px">
+          <div class="config-label">插入動態變數</div>
+          <div class="var-chips">
+            <div class="var-chip" onclick="insertVar('{{姓名}}')">{{姓名}}</div>
+            <div class="var-chip" onclick="insertVar('{{部門}}')">{{部門}}</div>
+            <div class="var-chip" onclick="insertVar('{{日期}}')">{{日期}}</div>
+            <div class="var-chip" onclick="insertVar('{{時間}}')">{{時間}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 圖片 -->
+      <div id="cfg-image" class="hidden">
+        <div class="config-section">
+          <div class="config-label">圖片<span>*</span></div>
+          <div class="upload-zone" onclick="alert('上傳功能示意')">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text"><strong>點擊上傳</strong>或貼上圖片 URL</div>
+            <div class="upload-text" style="margin-top:3px">JPG · PNG · GIF，最大 10MB</div>
+          </div>
+        </div>
+        <div class="config-section" style="margin-top:8px">
+          <div class="config-label">點擊動作（選填）</div>
+          <select class="config-input">
+            <option value="">不設定</option>
+            <option>開啟連結</option>
+            <option>傳送訊息</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 檔案 -->
+      <div id="cfg-file" class="hidden">
+        <div class="config-section">
+          <div class="config-label">上傳檔案<span>*</span></div>
+          <div class="upload-zone" onclick="alert('上傳功能示意')">
+            <div class="upload-icon">📎</div>
+            <div class="upload-text"><strong>點擊上傳</strong>檔案</div>
+            <div class="upload-text" style="margin-top:3px">PDF · Word · Excel · PPT，最大 50MB</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 連結 -->
+      <div id="cfg-link" class="hidden">
+        <div class="config-section">
+          <div class="config-label">標題<span>*</span></div>
+          <input class="config-input" type="text" placeholder="連結標題" value="2024 年度員工手冊" oninput="updatePreview()">
+        </div>
+        <div class="config-section">
+          <div class="config-label">連結網址<span>*</span></div>
+          <input class="config-input" type="url" placeholder="https://" value="https://hr.coolbe.com/handbook">
+        </div>
+        <div class="config-section">
+          <div class="config-label">說明文字（選填）</div>
+          <input class="config-input" type="text" placeholder="點擊查看詳細內容">
+        </div>
+      </div>
+
+      <!-- 按鈕範本 -->
+      <div id="cfg-button" class="hidden">
+        <div class="config-section">
+          <div class="config-label">縮圖圖片（選填）</div>
+          <div class="upload-zone" style="padding:10px" onclick="alert('上傳功能示意')">
+            <div class="upload-text"><strong>點擊上傳</strong>縮圖</div>
+          </div>
+        </div>
+        <div class="config-row">
+          <div class="config-section">
+            <div class="config-label">標題<span>*</span></div>
+            <input class="config-input" type="text" placeholder="標題" value="請假申請">
+          </div>
+          <div class="config-section">
+            <div class="config-label">說明文字</div>
+            <input class="config-input" type="text" placeholder="說明" value="請選擇處理方式">
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-label">按鈕（最多 4 個）</div>
+          <div class="btn-group" id="btnGroup">
+            <div class="btn-item">
+              <div class="btn-item-label">按鈕文字</div>
+              <input placeholder="批准" value="✅ 批准">
+            </div>
+            <div class="btn-item">
+              <div class="btn-item-label">動作類型</div>
+              <select><option>Postback</option><option>開啟連結</option><option>傳送訊息</option></select>
+            </div>
+            <div class="btn-item">
+              <div class="btn-item-label">動作值</div>
+              <input placeholder="approve" value="approve">
+            </div>
+          </div>
+          <div class="btn-group" style="margin-top:5px">
+            <div class="btn-item">
+              <div class="btn-item-label">按鈕文字</div>
+              <input placeholder="拒絕" value="❌ 拒絕">
+            </div>
+            <div class="btn-item">
+              <div class="btn-item-label">動作類型</div>
+              <select><option>Postback</option><option>開啟連結</option><option>傳送訊息</option></select>
+            </div>
+            <div class="btn-item">
+              <div class="btn-item-label">動作值</div>
+              <input placeholder="reject" value="reject">
+            </div>
+          </div>
+          <div class="add-btn" onclick="alert('新增按鈕')">＋ 新增按鈕</div>
+        </div>
+      </div>
+
+      <!-- 列表範本 -->
+      <div id="cfg-list" class="hidden">
+        <div class="config-section">
+          <div class="config-label">列表項目（最多 6 項）</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="btn-item" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:center">
+              <div style="font-size:18px;cursor:pointer" onclick="alert('選擇圖示')">📅</div>
+              <input class="config-input" placeholder="標題" value="年假申請截止日">
+              <input class="config-input" placeholder="說明" value="12/31 前提交">
+            </div>
+            <div class="btn-item" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:center">
+              <div style="font-size:18px;cursor:pointer" onclick="alert('選擇圖示')">💰</div>
+              <input class="config-input" placeholder="標題" value="年終獎金發放日">
+              <input class="config-input" placeholder="說明" value="1/15 入帳">
+            </div>
+            <div class="btn-item" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:center">
+              <div style="font-size:18px;cursor:pointer" onclick="alert('選擇圖示')">🎉</div>
+              <input class="config-input" placeholder="標題" value="尾牙活動">
+              <input class="config-input" placeholder="說明" value="1/20 晚上">
+            </div>
+          </div>
+          <div class="add-btn" style="margin-top:5px">＋ 新增項目</div>
+        </div>
+      </div>
+
+      <!-- 輪播圖 -->
+      <div id="cfg-carousel" class="hidden">
+        <div class="config-section">
+          <div class="config-label">輪播卡片（最多 10 張）</div>
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
+            <div class="btn-item" style="min-width:140px;flex-shrink:0">
+              <div class="btn-item-label">卡片 1</div>
+              <input class="config-input" placeholder="標題" value="員工旅遊" style="margin-top:4px">
+              <input class="config-input" placeholder="說明" value="3/15 出發" style="margin-top:4px">
+              <div class="upload-zone" style="padding:6px;margin-top:4px">
+                <div class="upload-text">圖片</div>
+              </div>
+            </div>
+            <div class="btn-item" style="min-width:140px;flex-shrink:0">
+              <div class="btn-item-label">卡片 2</div>
+              <input class="config-input" placeholder="標題" value="健康檢查" style="margin-top:4px">
+              <input class="config-input" placeholder="說明" value="4/1 預約" style="margin-top:4px">
+              <div class="upload-zone" style="padding:6px;margin-top:4px">
+                <div class="upload-text">圖片</div>
+              </div>
+            </div>
+            <div class="add-btn" style="min-width:80px;display:flex;align-items:center;justify-content:center">＋</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 套用範本 -->
+      <div id="cfg-template" class="hidden">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:10px" onclick="setFormat('text')">
+            <div style="width:32px;height:32px;background:#E1F5EE;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">📢</div>
+            <div><div style="font-size:12px;font-weight:500">公告提醒範本</div><div style="font-size:11px;color:var(--color-text-tertiary)">文字 · 含姓名變數</div></div>
+          </div>
+          <div style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;background:#E1F5EE;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">✅</div>
+            <div><div style="font-size:12px;font-weight:500">審核通知範本</div><div style="font-size:11px;color:var(--color-text-tertiary)">按鈕範本 · 批准/拒絕</div></div>
+          </div>
+          <div style="background:var(--color-background-secondary);border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;background:#E1F5EE;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">⏰</div>
+            <div><div style="font-size:12px;font-weight:500">打卡提醒範本</div><div style="font-size:11px;color:var(--color-text-tertiary)">文字 · 含時間變數</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Reply 選項 -->
+    <div class="config-box" style="gap:8px">
+      <div class="qr-toggle" onclick="toggleQR()">
+        <div class="qr-label">加入 Quick Reply 快速回覆按鈕</div>
+        <div class="toggle" id="qrToggle"></div>
+      </div>
+      <div id="qrArea" class="hidden" style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="qrBtns">
+          <input class="config-input" style="width:auto;flex:1;min-width:80px" placeholder="按鈕文字" value="確認收到">
+          <input class="config-input" style="width:auto;flex:1;min-width:80px" placeholder="按鈕文字" value="稍後回覆">
+        </div>
+        <div class="add-btn">＋ 新增快速回覆（最多 13 個）</div>
+      </div>
+    </div>
+
+    <!-- 操作按鈕 -->
+    <div class="action-bar">
+      <button class="btn-secondary">← 上一步</button>
+      <button class="btn-secondary">儲存草稿</button>
+      <button class="btn-primary">下一步 →</button>
+    </div>
+
+  </div>
+
+  <!-- 右側預覽 -->
+  <div class="right">
+    <div class="preview-header">
+      <div class="preview-title">預覽效果</div>
+      <div class="preview-device">
+        <button class="dev-btn active">手機</button>
+        <button class="dev-btn">桌面</button>
+      </div>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <div class="chat-row">
+        <div class="bot-avatar">🤖</div>
+        <div class="bubble-wrap">
+          <div class="bubble-name">HR 公告 Bot</div>
+          <div class="bubble" id="previewBubble">
+            您好 <strong>王小明</strong>，這是來自 HR 的重要通知，請留意查看。
+          </div>
+          <div class="bubble-time">09:30</div>
+        </div>
+      </div>
+    </div>
+    <div class="preview-footer">
+      <div class="pf-note">以上為模擬畫面，實際顯示以 LINE WORKS 為準</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFormat = 'text';
+let qrOn = false;
+
+const previews = {
+  text: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="bubble">${(document.getElementById('textContent')?.value || '').replace(/{{姓名}}/g,'<strong>王小明</strong>').replace(/{{部門}}/g,'<strong>人資部</strong>').replace(/{{日期}}/g,'<strong>2024/12/31</strong>').replace(/{{時間}}/g,'<strong>09:00</strong>').replace(/\n/g,'<br>')}</div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  image: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="img-bubble">🖼️ 圖片預覽</div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  file: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="file-bubble">
+          <div class="file-icon">📄</div>
+          <div class="file-info">
+            <div class="file-name">員工手冊2024.pdf</div>
+            <div class="file-size">2.4 MB</div>
+          </div>
+        </div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  link: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="link-bubble">
+          <div class="link-thumb">📖</div>
+          <div class="link-content">
+            <div class="link-title">2024 年度員工手冊</div>
+            <div class="link-url">hr.coolbe.com/handbook</div>
+          </div>
+        </div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  button: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="btn-template">
+          <div class="btn-thumb">請假申請</div>
+          <div class="btn-content">
+            <div class="btn-ttl">請假申請</div>
+            <div class="btn-desc">請選擇處理方式</div>
+            <div class="btn-actions">
+              <div class="btn-action-item">✅ 批准</div>
+              <div class="btn-action-item">❌ 拒絕</div>
+            </div>
+          </div>
+        </div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  list: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="list-bubble">
+          <div class="list-item"><div class="list-item-icon">📅</div><div class="list-item-text"><div class="list-item-title">年假申請截止日</div><div class="list-item-desc">12/31 前提交</div></div></div>
+          <div class="list-item"><div class="list-item-icon">💰</div><div class="list-item-text"><div class="list-item-title">年終獎金發放日</div><div class="list-item-desc">1/15 入帳</div></div></div>
+          <div class="list-item"><div class="list-item-icon">🎉</div><div class="list-item-text"><div class="list-item-title">尾牙活動</div><div class="list-item-desc">1/20 晚上</div></div></div>
+        </div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  carousel: () => `
+    <div class="chat-row">
+      <div class="bot-avatar">🤖</div>
+      <div class="bubble-wrap">
+        <div class="bubble-name">HR 公告 Bot</div>
+        <div class="carousel-wrap">
+          <div class="carousel-card"><div class="carousel-img">✈️</div><div class="carousel-content"><div class="carousel-title">員工旅遊</div><div class="carousel-desc">3/15 出發</div><div class="carousel-btn">報名</div></div></div>
+          <div class="carousel-card"><div class="carousel-img">🏥</div><div class="carousel-content"><div class="carousel-title">健康檢查</div><div class="carousel-desc">4/1 預約</div><div class="carousel-btn">預約</div></div></div>
+        </div>
+        <div class="bubble-time">09:30</div>
+      </div>
+    </div>`,
+  template: () => previews.text()
+};
+
+function setFormat(fmt) {
+  currentFormat = fmt;
+  document.querySelectorAll('.fmt-card').forEach(c => c.classList.toggle('active', c.dataset.fmt === fmt));
+  ['text','image','file','link','button','list','carousel','template'].forEach(f => {
+    const el = document.getElementById('cfg-'+f);
+    if(el) el.classList.toggle('hidden', f !== fmt);
+  });
+  updatePreview();
+}
+
+function updatePreview() {
+  const body = document.getElementById('previewBody');
+  const qrHtml = qrOn ? `<div class="qr-row"><div class="qr-btn">確認收到</div><div class="qr-btn">稍後回覆</div></div>` : '';
+  body.innerHTML = (previews[currentFormat] || previews.text)() + qrHtml;
+}
+
+function insertVar(v) {
+  const t = document.getElementById('textContent');
+  if(!t) return;
+  const s = t.selectionStart, e = t.selectionEnd;
+  t.value = t.value.slice(0,s) + v + t.value.slice(e);
+  t.selectionStart = t.selectionEnd = s + v.length;
+  t.focus();
+  updatePreview();
+}
+
+function toggleQR() {
+  qrOn = !qrOn;
+  document.getElementById('qrToggle').classList.toggle('on', qrOn);
+  const area = document.getElementById('qrArea');
+  area.style.display = qrOn ? 'flex' : 'none';
+  area.classList.toggle('hidden', !qrOn);
+  updatePreview();
+}
+
+updatePreview();
+</script>
