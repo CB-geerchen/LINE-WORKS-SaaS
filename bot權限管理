@@ -1,0 +1,191 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#F4F6F4;color:#1A2218;font-size:14px}
+.breadcrumb{display:flex;align-items:center;gap:6px;padding:16px 24px 0;font-size:12px;color:#7A8C78}
+.breadcrumb span{color:#1A2218;font-weight:500}
+.bc-sep{opacity:.4}
+.page-header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px 0}
+.page-title h1{font-size:18px;font-weight:600;color:#0D1C0B}
+.page-sub{font-size:12px;color:#7A8C78;margin-top:3px}
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;border:none}
+.btn-ghost{background:transparent;border:.5px solid #C8D4C6;color:#3A5237}
+.btn-ghost:hover{background:#E8F0E7}
+.btn-primary{background:#085041;color:#fff}
+.btn-primary:hover{background:#064535}
+
+/* 說明區 */
+.info-bar{margin:12px 24px 0;background:#E1F5EE;border:.5px solid #9FE1CB;border-radius:10px;padding:10px 14px;font-size:12px;color:#085041;display:flex;gap:8px;align-items:flex-start;line-height:1.6}
+.info-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+
+/* 主體 */
+.body{padding:16px 24px 24px;display:flex;flex-direction:column;gap:12px}
+
+/* 成員列表 */
+.member-table{background:#fff;border-radius:12px;border:.5px solid #E0E8DF;overflow:hidden}
+.table-header{display:grid;grid-template-columns:220px 1fr 140px;gap:0;background:#F8FAF8;border-bottom:.5px solid #E0E8DF}
+.th{font-size:11px;font-weight:500;color:#7A8C78;padding:8px 16px}
+.member-row{display:grid;grid-template-columns:220px 1fr 140px;gap:0;border-bottom:.5px solid #F0F4F0;align-items:center;transition:background .1s}
+.member-row:last-child{border-bottom:none}
+.member-row:hover{background:#FAFCFA}
+.member-cell{padding:12px 16px}
+.member-info{display:flex;align-items:center;gap:8px}
+.avatar{width:28px;height:28px;border-radius:50%;background:#085041;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.member-name{font-size:13px;font-weight:500;color:#1A2218}
+.member-role{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px;margin-top:2px}
+.role-build{background:#E1F5EE;color:#085041}
+.role-edit{background:#EEF6F0;color:#3C7A5E}
+.role-view{background:#F4F6F4;color:#5A6A58;border:.5px solid #E0E8DF}
+
+/* Bot chip 選擇 */
+.bot-chips{display:flex;flex-wrap:wrap;gap:5px}
+.bot-chip{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:99px;border:.5px solid #E0E8DF;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;background:#fff;color:#7A8C78;user-select:none}
+.bot-chip:hover{border-color:#9FE1CB;color:#085041}
+.bot-chip.on{background:#E1F5EE;border-color:#9FE1CB;color:#085041}
+.bot-chip-icon{font-size:12px}
+.bot-chip.on .chip-dot{background:#085041}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:#C8D4C6;flex-shrink:0;transition:background .15s}
+
+/* 操作欄 */
+.action-cell{padding:12px 16px;display:flex;justify-content:flex-end}
+.remove-btn{font-size:11px;color:#A32D2D;cursor:pointer;background:none;border:none;font-family:inherit;opacity:.7}
+.remove-btn:hover{opacity:1}
+
+/* 新增成員列 */
+.add-row{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:.5px solid #E0E8DF;background:#F8FAF8}
+.add-select{background:#fff;border:.5px solid #C8D4C6;border-radius:8px;padding:6px 10px;font-size:12px;color:#1A2218;outline:none;font-family:inherit;flex:1;max-width:200px}
+
+/* 儲存列 */
+.save-bar{display:flex;justify-content:flex-end;gap:8px;padding:14px 0 0}
+
+/* 空狀態 */
+.empty-row{padding:32px;text-align:center;color:#7A8C78;font-size:12px}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<div>
+<div class="breadcrumb">
+  Bot 管理 <span class="bc-sep">›</span> <span>Bot 權限管理</span>
+</div>
+<div class="page-header">
+  <div>
+    <h1 class="page-title" style="font-size:18px;font-weight:600;color:#0D1C0B">Bot 權限管理</h1>
+    <div class="page-sub">設定哪些成員可以操作哪幾支 Bot，操作層級由各成員的角色決定</div>
+  </div>
+</div>
+
+<!-- 說明 -->
+<div class="info-bar">
+  <div class="info-icon">ℹ️</div>
+  <div>
+    <strong>操作層級從角色繼承：</strong>成員的建立 / 編輯 / 檢視權限在「角色設定」裡定義，這裡只需要指定各成員可以操作哪幾支 Bot。同一成員有多個角色時，以最高層級為準。
+    <div style="margin-top:4px;display:flex;gap:10px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:4px"><span class="member-role role-build" style="margin:0">建立</span>新增 · 編輯 · 刪除 · 檢視</span>
+      <span style="display:inline-flex;align-items:center;gap:4px"><span class="member-role role-edit" style="margin:0">編輯</span>編輯 · 檢視</span>
+      <span style="display:inline-flex;align-items:center;gap:4px"><span class="member-role role-view" style="margin:0">檢視</span>只能看</span>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="member-table">
+    <div class="table-header">
+      <div class="th">成員</div>
+      <div class="th">可操作的 Bot</div>
+      <div class="th" style="text-align:right">操作</div>
+    </div>
+
+    <!-- 成員 1 -->
+    <div class="member-row">
+      <div class="member-cell">
+        <div class="member-info">
+          <div class="avatar">王</div>
+          <div>
+            <div class="member-name">王小明</div>
+            <span class="member-role role-build">建立</span>
+          </div>
+        </div>
+      </div>
+      <div class="member-cell">
+        <div class="bot-chips">
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⏰</span>勤怠打卡 Bot</div>
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">❓</span>FAQ 問答 Bot</div>
+          <div class="bot-chip" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">🔔</span>安否確認 Bot</div>
+          <div class="bot-chip" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⚙️</span>自訂 Bot A</div>
+        </div>
+      </div>
+      <div class="action-cell"><button class="remove-btn">移除</button></div>
+    </div>
+
+    <!-- 成員 2 -->
+    <div class="member-row">
+      <div class="member-cell">
+        <div class="member-info">
+          <div class="avatar" style="background:#3C7A5E">李</div>
+          <div>
+            <div class="member-name">李美玲</div>
+            <span class="member-role role-edit">編輯</span>
+          </div>
+        </div>
+      </div>
+      <div class="member-cell">
+        <div class="bot-chips">
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⏰</span>勤怠打卡 Bot</div>
+          <div class="bot-chip" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">❓</span>FAQ 問答 Bot</div>
+          <div class="bot-chip" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">🔔</span>安否確認 Bot</div>
+          <div class="bot-chip" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⚙️</span>自訂 Bot A</div>
+        </div>
+      </div>
+      <div class="action-cell"><button class="remove-btn">移除</button></div>
+    </div>
+
+    <!-- 成員 3 -->
+    <div class="member-row">
+      <div class="member-cell">
+        <div class="member-info">
+          <div class="avatar" style="background:#7A6A3E">張</div>
+          <div>
+            <div class="member-name">張雅惠</div>
+            <span class="member-role role-view">檢視</span>
+          </div>
+        </div>
+      </div>
+      <div class="member-cell">
+        <div class="bot-chips">
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⏰</span>勤怠打卡 Bot</div>
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">❓</span>FAQ 問答 Bot</div>
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">🔔</span>安否確認 Bot</div>
+          <div class="bot-chip on" onclick="toggleChip(this)"><div class="chip-dot"></div><span class="bot-chip-icon">⚙️</span>自訂 Bot A</div>
+        </div>
+      </div>
+      <div class="action-cell"><button class="remove-btn">移除</button></div>
+    </div>
+
+    <!-- 新增成員列 -->
+    <div class="add-row">
+      <select class="add-select">
+        <option value="">選擇成員...</option>
+        <option>陳大偉（建立）</option>
+        <option>林建宏（編輯）</option>
+        <option>吳志偉（檢視）</option>
+      </select>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="alert('新增成員（示意）')">＋ 新增</button>
+      <div style="font-size:11px;color:#7A8C78;margin-left:4px">僅顯示具有 Bot 管理權限的成員</div>
+    </div>
+  </div>
+
+  <!-- 儲存 -->
+  <div class="save-bar">
+    <button class="btn btn-ghost">取消</button>
+    <button class="btn btn-primary">儲存變更</button>
+  </div>
+</div>
+</div>
+
+<script>
+function toggleChip(el) {
+  el.classList.toggle('on');
+  el.querySelector('.chip-dot').style.background = el.classList.contains('on') ? '#085041' : '#C8D4C6';
+  el.style.background = el.classList.contains('on') ? '' : '';
+}
+</script>
