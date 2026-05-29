@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>勤怠打卡 Bot — 打卡紀錄 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-900:#052E1C;--green-800:#085041;--green-700:#0F6E56;
+  --green-600:#1D9E75;--green-400:#4DC49A;--green-200:#9FE1CB;
+  --green-100:#D4F0E5;--green-50:#EDF9F4;
+  --amber:#E8A020;--amber-bg:#FFF8EC;--amber-dark:#7A5000;
+  --red:#C03030;--red-bg:#FEF2F2;--red-light:#F5C6C6;
+  --blue:#1A5FA8;--blue-bg:#EBF3FC;
+  --gray-900:#0F1511;--gray-700:#2D3830;--gray-500:#5A6A5C;
+  --gray-300:#A8B8AA;--gray-100:#EDF0ED;--gray-50:#F5F7F5;
+  --white:#FFFFFF;--radius:10px;--shadow:0 2px 12px rgba(8,80,65,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:var(--gray-50);color:var(--gray-900);font-size:14px}
+.shell{display:flex;min-height:100vh}
+
+/* sidebar */
+.sidebar{width:220px;background:var(--green-900);padding:20px 0;flex-shrink:0}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.logo-text{font-size:13px;font-weight:700;color:var(--green-200);letter-spacing:.08em}
+.logo-sub{font-size:10px;color:var(--green-400);margin-top:2px;opacity:.7}
+.nav-section{padding:8px 12px 4px;font-size:9px;font-weight:600;color:var(--green-400);letter-spacing:.12em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 20px;font-size:12px;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s}
+.nav-item:hover{color:var(--green-200);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--white);background:rgba(77,196,154,.15);border-right:2px solid var(--green-400)}
+.nav-icon{width:16px;text-align:center;font-size:13px}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* topbar */
+.topbar{background:var(--white);border-bottom:1px solid var(--gray-100);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray-300)}
+.breadcrumb span{color:var(--gray-700);font-weight:500}
+.topbar-right{display:flex;gap:8px;align-items:center}
+
+.content{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* page header */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:20px;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:10px}
+.page-title-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green-700),var(--green-600));display:flex;align-items:center;justify-content:center;font-size:18px}
+.page-sub{font-size:12px;color:var(--gray-500);margin-top:4px;margin-left:46px}
+
+/* filter bar */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:14px 18px;background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-100)}
+input[type=text],input[type=date],input[type=time],select,textarea{padding:8px 11px;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:8px;font-size:12px;font-family:'Sora',sans-serif;color:var(--gray-900);outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus,textarea:focus{border-color:var(--green-400);background:var(--white)}
+.filter-sep{color:var(--gray-300);font-size:12px}
+
+/* stat cards */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:transform .15s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-label{font-size:11px;color:var(--gray-300);margin-bottom:6px;font-weight:500}
+.stat-value{font-size:24px;font-weight:700;color:var(--gray-900);line-height:1;font-family:'JetBrains Mono',monospace}
+.stat-sub{font-size:10px;color:var(--gray-300);margin-top:5px}
+.stat-card.highlight{border-color:var(--green-200);background:var(--green-50)}
+.stat-card.highlight .stat-value{color:var(--green-700)}
+.stat-card.warn{border-color:var(--red-light);background:var(--red-bg)}
+.stat-card.warn .stat-value{color:var(--red)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;background:var(--white);border-radius:var(--radius) var(--radius) 0 0;border:1px solid var(--gray-100);border-bottom:none;padding:0 16px}
+.tab{padding:9px 16px;font-size:12px;font-weight:500;color:var(--gray-500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:5px}
+.tab:hover{color:var(--green-700)}
+.tab.active{color:var(--green-800);border-bottom-color:var(--green-700);font-weight:600}
+.cnt{font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;background:var(--gray-100);color:var(--gray-500)}
+.tab.active .cnt{background:var(--green-100);color:var(--green-700)}
+.tab.warn-tab.active{color:var(--amber-dark);border-bottom-color:var(--amber)}
+.tab.warn-tab.active .cnt{background:var(--amber-bg);color:var(--amber-dark)}
+
+/* table */
+.table-wrap{background:var(--white);border:1px solid var(--gray-100);border-radius:0 0 var(--radius) var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11px;font-weight:600;color:var(--gray-500);padding:10px 14px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);text-align:left;white-space:nowrap}
+tbody td{font-size:12px;color:var(--gray-700);padding:11px 14px;border-bottom:1px solid var(--gray-50);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#FAFCFA}
+.member-cell{display:flex;align-items:center;gap:7px}
+.avatar{width:26px;height:26px;border-radius:50%;color:var(--white);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
+.badge-checkin-in  {background:var(--green-50);color:var(--green-700);border:1px solid var(--green-200)}
+.badge-checkout-out{background:#EBF3FC;color:var(--blue);border:1px solid #B8D4EE}
+.badge-out-in      {background:#FFF3E0;color:var(--amber-dark);border:1px solid rgba(232,160,32,.3)}
+.badge-out-out     {background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE}
+.badge-manual      {background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-100)}
+
+.status-ok     {color:var(--green-600);font-size:11px;font-weight:500}
+.status-err    {color:var(--red);font-size:11px;font-weight:500}
+.status-warn   {color:var(--amber);font-size:11px;font-weight:500}
+
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* btns */
+.btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;border:none}
+.btn-primary{background:var(--green-800);color:var(--white)}
+.btn-primary:hover{background:var(--green-700)}
+.btn-ghost{background:transparent;border:1px solid var(--gray-100);color:var(--gray-700)}
+.btn-ghost:hover{background:var(--gray-50)}
+.btn-reject{background:var(--red-bg);border:1px solid var(--red-light);color:var(--red)}
+.btn-reject:hover{background:#fde8e8}
+.btn-sm{padding:4px 9px;font-size:11px}
+
+/* pagination */
+.table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--gray-100);background:var(--gray-50)}
+.pg-info{font-size:11px;color:var(--gray-300)}
+.pg-btns{display:flex;gap:3px}
+.pg-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--gray-100);background:var(--white);font-size:12px;font-family:'Sora',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-700);transition:all .15s}
+.pg-btn:hover{background:var(--green-50);border-color:var(--green-200);color:var(--green-700)}
+.pg-btn.active{background:var(--green-800);color:var(--white);border-color:var(--green-800)}
+
+/* anomaly */
+.anomaly-row td{background:#FFFBFA}
+.anomaly-desc{font-size:10px;color:var(--red);margin-top:2px}
+
+/* tab panes */
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:14px;width:460px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);transform:translateY(12px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:600;color:var(--gray-900)}
+.modal-close{background:none;border:none;font-size:18px;color:var(--gray-300);cursor:pointer;padding:0 4px;line-height:1}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;justify-content:flex-end;gap:8px}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.label{display:block;font-size:11px;font-weight:600;color:var(--gray-700);margin-bottom:5px;letter-spacing:.03em}
+.label .req{color:var(--red);margin-left:2px}
+input[type=text]{width:100%}
+select{width:100%}
+input[type=date]{width:100%}
+input[type=time]{width:100%}
+textarea{width:100%;min-height:60px;resize:vertical;line-height:1.5}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* tag */
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
+.tag-manual{background:var(--gray-100);color:var(--gray-500)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">CoolBe LWS</div>
+      <div class="logo-sub">SaaS 管理後台</div>
+    </div>
+    <div class="nav-section">Bot 管理</div>
+    <div class="nav-item"><span class="nav-icon">🤖</span>Bot 列表</div>
+    <div class="nav-item"><span class="nav-icon">⏰</span>勤怠打卡 Bot</div>
+    <div class="nav-item active" style="padding-left:38px;font-size:11px"><span class="nav-icon">📋</span>打卡紀錄</div>
+    <div class="nav-item"><span class="nav-icon">❓</span>FAQ 問答 Bot</div>
+    <div class="nav-item"><span class="nav-icon">🔔</span>安否確認 Bot</div>
+    <div class="nav-section" style="margin-top:8px">推播排程</div>
+    <div class="nav-item"><span class="nav-icon">📅</span>排程列表</div>
+    <div class="nav-section" style="margin-top:8px">設定</div>
+    <div class="nav-item"><span class="nav-icon">💬</span>預設訊息</div>
+    <div class="nav-item"><span class="nav-icon">🔐</span>Bot 權限管理</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        Bot 管理 <span>›</span> 勤怠打卡 Bot <span>›</span> <span>打卡紀錄</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm">⬇ 匯出 CSV</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- 頁面標題 -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">
+            <div class="page-title-icon">📋</div>打卡紀錄
+          </div>
+          <div class="page-sub">勤怠打卡 Bot &nbsp;·&nbsp; 2024年12月</div>
+        </div>
+      </div>
+
+      <!-- 篩選列 -->
+      <div class="filter-bar">
+        <input type="text" placeholder="搜尋成員姓名..." style="width:160px">
+        <select style="width:120px">
+          <option>全部部門</option>
+          <option>人資部</option>
+          <option>業務部</option>
+          <option>工程部</option>
+        </select>
+        <select style="width:130px" id="typeFilter" onchange="applyFilter()">
+          <option value="all">全部類型</option>
+          <option value="in">上班打卡</option>
+          <option value="out">下班打卡</option>
+          <option value="out-in">外出上班</option>
+          <option value="out-out">外出下班</option>
+          <option value="manual">手動補卡</option>
+        </select>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="date" value="2024-12-01" style="width:130px">
+          <span class="filter-sep">–</span>
+          <input type="date" value="2024-12-18" style="width:130px">
+        </div>
+        <button class="btn btn-ghost btn-sm">套用</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--gray-300)">重設</button>
+      </div>
+
+      <!-- 統計卡片（四種類型 + 異常）-->
+      <div class="stats-grid">
+        <div class="stat-card highlight">
+          <div class="stat-label">出勤率</div>
+          <div class="stat-value">94.2<span style="font-size:14px;font-weight:500">%</span></div>
+          <div class="stat-sub">本月截至今日</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">打卡總筆數</div>
+          <div class="stat-value">810</div>
+          <div class="stat-sub">含手動補卡 8 筆</div>
+        </div>
+        <div class="stat-card warn">
+          <div class="stat-label">異常筆數</div>
+          <div class="stat-value">18</div>
+          <div class="stat-sub">遲到 12 ／ 缺打卡 6</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">手動補卡</div>
+          <div class="stat-value">8</div>
+          <div class="stat-sub">HR 後台補登</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('all',this)">全部紀錄 <span class="cnt">810</span></div>
+        <div class="tab warn-tab" onclick="switchTab('anomaly',this)">異常紀錄 <span class="cnt">18</span></div>
+        <div class="tab" onclick="switchTab('manual',this)">手動補卡 <span class="cnt">8</span></div>
+      </div>
+
+      <!-- 全部紀錄 -->
+      <div id="tab-all" class="tab-pane active">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>成員</th>
+                <th>部門</th>
+                <th>打卡類型</th>
+                <th>打卡時間</th>
+                <th>來源</th>
+                <th>狀態</th>
+              </tr>
+            </thead>
+            <tbody id="allTableBody">
+              <tr data-type="in">
+                <td><div class="member-cell"><div class="avatar" style="background:var(--green-700)">王</div>王小明</div></td>
+                <td>業務部</td>
+                <td><span class="badge badge-checkin-in">上班打卡</span></td>
+                <td><span class="mono">2024/12/18　08:58</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+              <tr data-type="in">
+                <td><div class="member-cell"><div class="avatar" style="background:var(--green-600)">李</div>李美玲</div></td>
+                <td>人資部</td>
+                <td><span class="badge badge-checkin-in">上班打卡</span></td>
+                <td><span class="mono">2024/12/18　09:12</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-err">⚠ 遲到 12 分</span></td>
+              </tr>
+              <tr data-type="out-in">
+                <td><div class="member-cell"><div class="avatar" style="background:#3C5A8A">陳</div>陳大偉</div></td>
+                <td>工程部</td>
+                <td><span class="badge badge-out-in">外出上班</span></td>
+                <td><span class="mono">2024/12/18　13:30</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+              <tr data-type="out-out">
+                <td><div class="member-cell"><div class="avatar" style="background:#3C5A8A">陳</div>陳大偉</div></td>
+                <td>工程部</td>
+                <td><span class="badge badge-out-out">外出下班</span></td>
+                <td><span class="mono">2024/12/18　15:15</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+              <tr data-type="manual">
+                <td><div class="member-cell"><div class="avatar" style="background:#7A5A3A">張</div>張雅惠</div></td>
+                <td>業務部</td>
+                <td><span class="badge badge-manual">上班打卡</span> <span class="tag tag-manual" style="margin-left:3px">補卡</span></td>
+                <td><span class="mono">2024/12/18　09:00</span></td>
+                <td>HR 補登</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+              <tr data-type="out">
+                <td><div class="member-cell"><div class="avatar" style="background:#4A7A5A">林</div>林建宏</div></td>
+                <td>工程部</td>
+                <td><span class="badge badge-checkout-out">下班打卡</span></td>
+                <td><span class="mono">2024/12/18　18:02</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+              <tr data-type="out">
+                <td><div class="member-cell"><div class="avatar" style="background:#5A3A7A">吳</div>吳志偉</div></td>
+                <td>業務部</td>
+                <td><span class="badge badge-checkout-out">下班打卡</span></td>
+                <td><span class="mono">2024/12/17　17:55</span></td>
+                <td>Bot 打卡</td>
+                <td><span class="status-ok">✓ 正常</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <div class="pg-info">共 810 筆，第 1 / 41 頁</div>
+            <div class="pg-btns">
+              <button class="pg-btn">‹</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn">3</button>
+              <button class="pg-btn">…</button>
+              <button class="pg-btn">41</button>
+              <button class="pg-btn">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 異常紀錄 -->
+      <div id="tab-anomaly" class="tab-pane">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>成員</th>
+                <th>部門</th>
+                <th>異常類型</th>
+                <th>日期</th>
+                <th>說明</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="anomaly-row">
+                <td><div class="member-cell"><div class="avatar" style="background:var(--green-600)">李</div>李美玲</div></td>
+                <td>人資部</td>
+                <td><span class="badge badge-out-in">遲到</span></td>
+                <td><span class="mono">12/18</span></td>
+                <td><div>上班打卡時間 09:12<div class="anomaly-desc">超過上班時間 12 分鐘</div></div></td>
+                <td><button class="btn btn-ghost btn-sm">備註</button></td>
+              </tr>
+              <tr class="anomaly-row">
+                <td><div class="member-cell"><div class="avatar" style="background:#5A3A7A">吳</div>吳志偉</div></td>
+                <td>業務部</td>
+                <td><span class="badge badge-manual">缺打卡</span></td>
+                <td><span class="mono">12/17</span></td>
+                <td><div>當日無下班打卡紀錄<div class="anomaly-desc">有上班打卡，但無下班打卡</div></div></td>
+                <td><button class="btn btn-ghost btn-sm" onclick="openManualModal('吳志偉','業務部','下班打卡','2024-12-17')">補登</button></td>
+              </tr>
+              <tr class="anomaly-row">
+                <td><div class="member-cell"><div class="avatar" style="background:#7A5000">黃</div>黃怡君</div></td>
+                <td>工程部</td>
+                <td><span class="badge" style="background:var(--amber-bg);color:var(--amber-dark);border:1px solid rgba(232,160,32,.3)">重複打卡</span></td>
+                <td><span class="mono">12/16</span></td>
+                <td><div>同時段重複上班打卡<div class="anomaly-desc">09:01 與 09:03 各一筆紀錄</div></div></td>
+                <td><button class="btn btn-reject btn-sm" onclick="confirmDelete()">刪除重複</button></td>
+              </tr>
+              <tr class="anomaly-row">
+                <td><div class="member-cell"><div class="avatar" style="background:#3C5A8A">陳</div>陳淑芬</div></td>
+                <td>人資部</td>
+                <td><span class="badge badge-manual">缺打卡</span></td>
+                <td><span class="mono">12/15</span></td>
+                <td><div>當日無任何打卡紀錄<div class="anomaly-desc">未執行上班 / 下班打卡</div></div></td>
+                <td><button class="btn btn-ghost btn-sm" onclick="openManualModal('陳淑芬','人資部','上班打卡','2024-12-15')">補登</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <div class="pg-info">共 18 筆異常紀錄</div>
+            <button class="btn btn-ghost btn-sm">⬇ 匯出異常清單</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 手動補卡 -->
+      <div id="tab-manual" class="tab-pane">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>成員</th>
+                <th>部門</th>
+                <th>補登類型</th>
+                <th>補登打卡時間</th>
+                <th>備註</th>
+                <th>補登人</th>
+                <th>補登時間</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="manualTableBody">
+              <tr>
+                <td><div class="member-cell"><div class="avatar" style="background:#7A5A3A">張</div>張雅惠</div></td>
+                <td>業務部</td>
+                <td><span class="badge badge-checkin-in">上班打卡</span></td>
+                <td><span class="mono">2024/12/18　09:00</span></td>
+                <td>手機沒電無法打卡</td>
+                <td>王小明（HR）</td>
+                <td><span class="mono" style="font-size:11px;color:var(--gray-300)">12/18 10:30</span></td>
+                <td><button class="btn btn-reject btn-sm" onclick="confirmDeleteManual(this)">刪除</button></td>
+              </tr>
+              <tr>
+                <td><div class="member-cell"><div class="avatar" style="background:#3C5A8A">陳</div>陳淑芬</div></td>
+                <td>人資部</td>
+                <td><span class="badge badge-checkin-in">上班打卡</span></td>
+                <td><span class="mono">2024/12/15　08:55</span></td>
+                <td>網路問題</td>
+                <td>王小明（HR）</td>
+                <td><span class="mono" style="font-size:11px;color:var(--gray-300)">12/15 11:00</span></td>
+                <td><button class="btn btn-reject btn-sm" onclick="confirmDeleteManual(this)">刪除</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <div class="pg-info">共 8 筆手動補卡紀錄</div>
+            <button class="btn btn-primary btn-sm" onclick="openManualModal('','','','')">＋ 新增手動補卡</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 手動補卡 Modal -->
+<div class="modal-overlay" id="manualModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">手動補卡</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="label">成員 <span class="req">*</span></label>
+        <select id="modalMember">
+          <option value="">選擇成員...</option>
+          <option>王小明（業務部）</option>
+          <option>李美玲（人資部）</option>
+          <option>陳大偉（工程部）</option>
+          <option>張雅惠（業務部）</option>
+          <option>林建宏（工程部）</option>
+          <option>吳志偉（業務部）</option>
+          <option>黃怡君（工程部）</option>
+          <option>陳淑芬（人資部）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label">打卡類型 <span class="req">*</span></label>
+        <select id="modalType">
+          <option value="">選擇類型...</option>
+          <option value="in">上班打卡</option>
+          <option value="out">下班打卡</option>
+          <option value="out-in">外出上班</option>
+          <option value="out-out">外出下班</option>
+        </select>
+      </div>
+      <div class="input-row field">
+        <div>
+          <label class="label">打卡日期 <span class="req">*</span></label>
+          <input type="date" id="modalDate" style="width:100%">
+        </div>
+        <div>
+          <label class="label">打卡時間 <span class="req">*</span></label>
+          <input type="time" id="modalTime" style="width:100%">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">備註原因</label>
+        <textarea id="modalNote" placeholder="說明補卡原因（選填）" style="width:100%"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitManual()">確認補登</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function openManualModal(name, dept, type, date) {
+  if(name) document.getElementById('modalMember').value = name + (dept ? `（${dept}）` : '');
+  const typeMap = {'上班打卡':'in','下班打卡':'out','外出上班':'out-in','外出下班':'out-out'};
+  if(type) document.getElementById('modalType').value = typeMap[type] || '';
+  if(date) document.getElementById('modalDate').value = date;
+  document.getElementById('manualModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('manualModal').classList.remove('open');
+  document.getElementById('modalMember').value = '';
+  document.getElementById('modalType').value = '';
+  document.getElementById('modalDate').value = '';
+  document.getElementById('modalTime').value = '';
+  document.getElementById('modalNote').value = '';
+}
+
+function closeModalOnOverlay(e) {
+  if(e.target === document.getElementById('manualModal')) closeModal();
+}
+
+const badgeMap = {
+  'in': '<span class="badge badge-checkin-in">上班打卡</span>',
+  'out': '<span class="badge badge-checkout-out">下班打卡</span>',
+  'out-in': '<span class="badge badge-out-in">外出上班</span>',
+  'out-out': '<span class="badge badge-out-out">外出下班</span>'
+};
+const avatarColors = ['#085041','#3C5A8A','#7A5A3A','#4A7A5A','#5A3A7A','#7A5000'];
+
+function submitManual() {
+  const member = document.getElementById('modalMember').value;
+  const type   = document.getElementById('modalType').value;
+  const date   = document.getElementById('modalDate').value;
+  const time   = document.getElementById('modalTime').value;
+  const note   = document.getElementById('modalNote').value;
+  if(!member || !type || !date || !time) { alert('請填寫所有必填欄位'); return; }
+  const name = member.split('（')[0];
+  const dept = member.includes('（') ? member.split('（')[1].replace('）','') : '';
+  const color = avatarColors[Math.floor(Math.random()*avatarColors.length)];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><div class="member-cell"><div class="avatar" style="background:${color}">${name[0]}</div>${name}</div></td>
+    <td>${dept}</td>
+    <td>${badgeMap[type]||''}</td>
+    <td><span class="mono">${date.replace(/-/g,'/')}　${time}</span></td>
+    <td>${note||'—'}</td>
+    <td>王小明（HR）</td>
+    <td><span class="mono" style="font-size:11px;color:var(--gray-300)">剛剛</span></td>
+    <td><button class="btn btn-reject btn-sm" onclick="confirmDeleteManual(this)">刪除</button></td>`;
+  document.getElementById('manualTableBody').prepend(tr);
+
+  // 同步新增到全部紀錄
+  const tr2 = document.createElement('tr');
+  tr2.setAttribute('data-type', type);
+  tr2.innerHTML = `
+    <td><div class="member-cell"><div class="avatar" style="background:${color}">${name[0]}</div>${name}</div></td>
+    <td>${dept}</td>
+    <td>${badgeMap[type]||''} <span class="tag tag-manual" style="margin-left:3px">補卡</span></td>
+    <td><span class="mono">${date.replace(/-/g,'/')}　${time}</span></td>
+    <td>HR 補登</td>
+    <td><span class="status-ok">✓ 正常</span></td>`;
+  document.getElementById('allTableBody').prepend(tr2);
+  closeModal();
+}
+
+function confirmDelete() {
+  if(confirm('確認刪除此重複打卡紀錄？')) {
+    event.target.closest('tr').style.opacity = '0';
+    setTimeout(() => event.target.closest('tr').remove(), 300);
+  }
+}
+function confirmDeleteManual(btn) {
+  if(confirm('確認刪除此手動補卡紀錄？刪除後無法復原。')) {
+    btn.closest('tr').style.opacity = '0';
+    setTimeout(() => btn.closest('tr').remove(), 300);
+  }
+}
+
+function applyFilter() {
+  const val = document.getElementById('typeFilter').value;
+  document.querySelectorAll('#allTableBody tr').forEach(tr => {
+    tr.style.display = (val === 'all' || tr.dataset.type === val || (val === 'manual' && tr.dataset.type === 'manual')) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
