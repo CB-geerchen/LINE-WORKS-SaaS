@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LWS SaaS — 整合中台 Integration Hub</title>
+<style>
+/* ── 完全沿用 jessicahuang-star.github.io/lws-mockup/ 設計語言 ── */
+:root {
+  --bg: #F6F7F9;
+  --surface: #FFFFFF;
+  --border: #E5E7EB;
+  --border-strong: #E0E0E6;
+  --text: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+  --primary: #007BFF;
+  --primary-hover: #0056B8;
+  --primary-soft: #E8F2FF;
+  --success: #18A058;
+  --success-soft: rgba(24,160,88,0.10);
+  --warning: #F59E0B;
+  --warning-soft: #FFFBEB;
+  --danger: #DC2626;
+  --danger-soft: rgba(220,38,38,0.08);
+  --info: #2080F0;
+  --info-soft: rgba(32,128,240,0.10);
+  --hover: #F3F4F6;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --radius-sm: 3px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --sidebar-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, system-ui, "Segoe UI", "Noto Sans TC", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+}
+.brand-name { font-size: 13px; font-weight: 600; }
+.brand-sub { font-size: 11px; color: var(--text-muted); }
+.nav-section-title {
+  font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-muted);
+  padding: 14px 16px 5px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px;
+  font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; border-radius: 0;
+  border-left: 2px solid transparent;
+  transition: all .12s;
+}
+.nav-item:hover { background: var(--hover); color: var(--text); }
+.nav-item.active { background: var(--primary-soft); color: var(--primary); border-left-color: var(--primary); font-weight: 500; }
+.nav-item.parent { font-weight: 500; color: var(--text); font-size: 12px; }
+.nav-item.child { padding-left: 32px; font-size: 12px; }
+.nav-item.new-feature::after {
+  content: 'New';
+  font-size: 9px; font-weight: 600;
+  background: var(--primary); color: #fff;
+  padding: 1px 5px; border-radius: 99px;
+  margin-left: auto;
+}
+.ico { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; fill: none; }
+
+/* ── Main content ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 24px 28px;
+  max-width: calc(100% - var(--sidebar-w));
+  overflow-x: hidden;
+}
+
+/* ── Page header ── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.page-title-block {}
+.page-eyebrow { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+.page-title { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
+.page-desc { font-size: 12px; color: var(--text-secondary); }
+.page-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: var(--radius);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1px solid transparent; transition: all .12s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+.btn-secondary:hover { background: var(--hover); }
+.btn-danger { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+.btn-sm { padding: 4px 9px; font-size: 11px; }
+.btn-icon { padding: 5px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.card-title { font-size: 13px; font-weight: 600; }
+.card-body { padding: 16px; }
+
+/* ── Tab nav ── */
+.tab-nav {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 8px 16px; font-size: 12px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .12s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Tags / badges ── */
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  padding: 1px 7px; border-radius: 99px;
+}
+.badge-primary { background: var(--primary-soft); color: var(--primary); }
+.badge-success { background: var(--success-soft); color: var(--success); }
+.badge-warning { background: var(--warning-soft); color: var(--warning); }
+.badge-danger { background: var(--danger-soft); color: var(--danger); }
+.badge-gray { background: var(--hover); color: var(--text-secondary); }
+.badge-new { background: #EDE9FE; color: #5B21B6; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; padding: 8px 12px;
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--hover);
+}
+.data-table td {
+  padding: 10px 12px; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--hover); }
+
+/* ── Form elements ── */
+.f-label { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+.f-row { margin-bottom: 14px; }
+.f-input, .f-select, .f-textarea {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 12px; color: var(--text);
+  background: var(--surface);
+  font-family: inherit;
+}
+.f-input:focus, .f-select:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+}
+.f-hint { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+.f-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.f-group-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* ── Radio / checkbox custom ── */
+.radio-group { display: flex; flex-direction: column; gap: 6px; }
+.radio-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius); cursor: pointer;
+  transition: all .12s;
+}
+.radio-item:hover { border-color: var(--primary); background: var(--primary-soft); }
+.radio-item.selected { border-color: var(--primary); background: var(--primary-soft); }
+.radio-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.radio-item.selected .radio-dot { border-color: var(--primary); background: var(--primary); }
+.radio-dot-inner { width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+.radio-label { font-size: 12px; font-weight: 500; }
+.radio-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+
+/* ── Info / notice boxes ── */
+.notice {
+  border-radius: var(--radius); padding: 8px 12px;
+  font-size: 11px; line-height: 1.6; margin-bottom: 12px;
+}
+.notice-info { background: var(--info-soft); color: #0C447C; border-left: 3px solid var(--info); border-radius: 0 var(--radius) var(--radius) 0; }
+.notice-warning { background: var(--warning-soft); color: #78350F; border-left: 3px solid var(--warning); border-radius: 0 var(--radius) var(--radius) 0; }
+.notice-success { background: var(--success-soft); color: #064E3B; border-left: 3px solid var(--success); border-radius: 0 var(--radius) var(--radius) 0; }
+
+/* ── Map rows (field mapping) ── */
+.map-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.map-field { flex: 1; }
+.map-arrow { color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+.map-remove { color: var(--text-muted); cursor: pointer; padding: 2px; flex-shrink: 0; }
+.map-remove:hover { color: var(--danger); }
+
+/* ── Step wizard ── */
+.wizard-steps {
+  display: flex; gap: 0; margin-bottom: 24px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.wizard-step {
+  flex: 1; padding: 10px 14px;
+  font-size: 11px; border-right: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.wizard-step:last-child { border-right: none; }
+.wizard-step.active { background: var(--primary-soft); color: var(--primary); font-weight: 500; }
+.wizard-step.done { background: var(--success-soft); color: var(--success); }
+.wizard-step-num { font-weight: 700; margin-right: 5px; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 32px; margin-bottom: 12px; }
+.empty-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+.empty-desc { font-size: 12px; margin-bottom: 16px; }
+
+/* ── Connector card (market style) ── */
+.connector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.connector-card {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px; cursor: pointer; transition: all .12s;
+  background: var(--surface);
+}
+.connector-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+.connector-card.connected { border-color: var(--success); background: var(--success-soft); }
+.connector-logo {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px; margin-bottom: 8px;
+}
+.connector-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.connector-desc { font-size: 10px; color: var(--text-muted); }
+
+/* ── Log table status dots ── */
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.dot-success { background: var(--success); }
+.dot-warning { background: var(--warning); }
+.dot-danger { background: var(--danger); }
+.dot-gray { background: var(--text-muted); }
+
+/* ── Trigger rule chip ── */
+.rule-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--hover); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 3px 8px;
+  font-size: 11px; color: var(--text);
+}
+.rule-op { color: var(--primary); font-weight: 500; }
+.route-from { background: #F3F4F6; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+.route-to { background: var(--primary-soft); color: var(--primary); padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+
+/* ── Phase badge ── */
+.phase-tag {
+  display: inline-block; font-size: 9px; font-weight: 600;
+  padding: 1px 6px; border-radius: 99px; margin-left: 4px;
+}
+.phase-2a { background: #DBEAFE; color: #1D4ED8; }
+.phase-2b { background: #EDE9FE; color: #5B21B6; }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">L</div>
+    <div>
+      <div class="brand-name">LWS Workspace</div>
+      <div class="brand-sub">啟動國際</div>
+    </div>
+  </div>
+
+  <div class="nav-section-title">主選單</div>
+  <div class="nav-item" onclick="showPage('home')">
+    <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    首頁監控版
+  </div>
+
+  <!-- Bot 管理 -->
+  <div class="nav-item parent">
+    <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M9 8h6M12 4v4M9 16h6M12 12v8"/><rect x="6" y="14" width="12" height="6" rx="2"/></svg>
+    Bot 管理
+  </div>
+  <div class="nav-item child" onclick="showPage('5.1')">5.1 Bot 列表與基本設定</div>
+  <div class="nav-item child" onclick="showPage('5.2')">5.2 推播排程</div>
+  <div class="nav-item child active" onclick="showPage('5.3')">5.3 Bot 選單設定</div>
+  <div class="nav-item child" onclick="showPage('5.4')">5.4 關鍵字設定</div>
+  <div class="nav-item child" onclick="showPage('5.5')">5.5 預設訊息</div>
+
+  <!-- 整合中台 NEW -->
+  <div class="nav-item parent" style="margin-top:4px">
+    <svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 12h4m4-5.5-4 4m4 5.5-4-4"/></svg>
+    整合中台
+    <span class="badge badge-new" style="margin-left:auto;font-size:9px">Phase 2B</span>
+  </div>
+  <div class="nav-item child new-feature" onclick="showPage('10.1')">10.1 連接器管理</div>
+  <div class="nav-item child" onclick="showPage('10.2')">10.2 觸發引擎</div>
+  <div class="nav-item child" onclick="showPage('10.3')">10.3 觸發紀錄</div>
+</aside>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- ════ 5.3 Bot 選單設定（更新版：新增「呼叫連接器」動作類型） ════ -->
+  <div id="page-5.3" class="page active">
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">Bot 管理 › 5.3</div>
+        <div class="page-title">Bot 選單設定</div>
+        <div class="page-desc">設定快速選單與 Rich Menu 的按鈕動作</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm">暫時儲存</button>
+        <button class="btn btn-primary btn-sm">啟用</button>
+      </div>
+    </div>
+
+    <div class="f-group" style="margin-bottom:16px">
+      <div class="f-row" style="margin:0">
+        <label class="f-label">Bot</label>
+        <select class="f-select"><option>庫存警報 Bot</option><option>打卡 Bot</option></select>
+      </div>
+      <div class="f-row" style="margin:0">
+        <label class="f-label">選單類型</label>
+        <select class="f-select"><option>Rich Menu（圖文選單）</option><option>快速選單</option></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">按鈕設定</span>
+        <button class="btn btn-secondary btn-sm">＋ 新增按鈕</button>
+      </div>
+      <div class="card-body" style="padding:0">
+
+        <!-- 按鈕 1：「確認補貨」使用呼叫連接器（展開狀態） -->
+        <div style="border-bottom:1px solid var(--border); padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <span style="font-size:12px;font-weight:600">按鈕 1</span>
+            <button class="btn btn-danger btn-sm">刪除</button>
+          </div>
+          <div class="f-group">
+            <div class="f-row" style="margin:0">
+              <label class="f-label">按鈕名稱</label>
+              <input class="f-input" value="確認補貨" />
+            </div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">動作類型</label>
+              <select class="f-select">
+                <option>啟動連結</option>
+                <option>發送訊息</option>
+                <option>關鍵字</option>
+                <option selected>呼叫連接器 ✦ 新增</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 呼叫連接器展開區 -->
+          <div style="background:var(--primary-soft);border:1px solid #BFDBFE;border-radius:var(--radius);padding:12px;margin-top:10px">
+            <div style="font-size:11px;font-weight:600;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:5px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 12h4m4-5.5-4 4m4 5.5-4-4"/></svg>
+              連接器設定
+            </div>
+            <div class="f-group">
+              <div class="f-row" style="margin:0">
+                <label class="f-label">選擇連接器</label>
+                <select class="f-select" style="background:#fff">
+                  <option>台北倉 ERP（ECOUNT）</option>
+                </select>
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">選擇動作</label>
+                <select class="f-select" style="background:#fff">
+                  <option>建立補貨申請（create_purchase_order）</option>
+                </select>
+                <div class="f-hint" style="color:#1D4ED8">動作清單由 IT 在連接器設定中定義</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div style="font-size:11px;font-weight:500;margin-bottom:8px;display:flex;justify-content:space-between">
+              帶入參數
+              <span style="font-weight:400;color:var(--text-muted);font-size:10px">左：動作需要的欄位　右：來源</span>
+            </div>
+            <div class="map-row">
+              <div class="map-field"><input class="f-input" style="background:#fff" value="item_code" readonly/></div>
+              <span class="map-arrow">←</span>
+              <div class="map-field">
+                <select class="f-select" style="background:#fff">
+                  <option>Postback 資料：item_code</option>
+                  <option>固定值</option>
+                </select>
+              </div>
+              <button class="map-remove btn btn-icon">✕</button>
+            </div>
+            <div class="map-row">
+              <div class="map-field"><input class="f-input" style="background:#fff" value="qty" readonly/></div>
+              <span class="map-arrow">←</span>
+              <div class="map-field">
+                <select class="f-select" style="background:#fff">
+                  <option>固定值：200</option>
+                  <option>Postback 資料</option>
+                </select>
+              </div>
+              <button class="map-remove btn btn-icon">✕</button>
+            </div>
+            <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-top:4px">＋ 新增參數</div>
+            <div class="divider"></div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">呼叫失敗時顯示給員工的訊息</label>
+              <input class="f-input" style="background:#fff" value="補貨申請失敗，請稍後重試或聯繫 IT 部門" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 按鈕 2：查看詳情（關鍵字，縮合狀態） -->
+        <div style="padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:12px;font-weight:600">按鈕 2</span>
+            <button class="btn btn-danger btn-sm">刪除</button>
+          </div>
+          <div class="f-group">
+            <div class="f-row" style="margin:0">
+              <label class="f-label">按鈕名稱</label>
+              <input class="f-input" value="查看詳情" />
+            </div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">動作類型</label>
+              <select class="f-select"><option>關鍵字</option><option>呼叫連接器 ✦ 新增</option></select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 10.1 連接器管理 ════ -->
+  <div id="page-10.1" class="page" style="display:none">
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">整合中台 › 10.1</div>
+        <div class="page-title">連接器管理</div>
+        <div class="page-desc">連接外部系統（ERP / CRM / HR），讓 Bot 可以查詢或回寫資料</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="showWizard()">＋ 新增連接器</button>
+    </div>
+
+    <!-- 已連接 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">已連接（2）</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>連接器名稱</th>
+              <th>系統類型</th>
+              <th>連線狀態</th>
+              <th>已設定動作</th>
+              <th>最後同步</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="connector-logo" style="background:#E8F5E9;color:#2E7D32;width:24px;height:24px;font-size:10px">EC</div>
+                  <div>
+                    <div style="font-weight:500">台北倉 ERP</div>
+                    <div style="font-size:10px;color:var(--text-muted)">ECOUNT ERP</div>
+                  </div>
+                </div>
+              </td>
+              <td>ERP</td>
+              <td><span class="status-dot dot-success"></span><span class="badge badge-success">連線正常</span></td>
+              <td>3 個動作</td>
+              <td style="color:var(--text-muted)">14:31</td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm" onclick="showPage('10.1-detail')">編輯</button>
+                  <button class="btn btn-secondary btn-sm">連線測試</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="connector-logo" style="background:#E8F0FE;color:#1565C0;width:24px;height:24px;font-size:10px">GW</div>
+                  <div>
+                    <div style="font-weight:500">Google Workspace</div>
+                    <div style="font-size:10px;color:var(--text-muted)">Google Workspace</div>
+                  </div>
+                </div>
+              </td>
+              <td>協作工具</td>
+              <td><span class="status-dot dot-success"></span><span class="badge badge-success">連線正常</span></td>
+              <td>2 個動作</td>
+              <td style="color:var(--text-muted)">09:00</td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm">編輯</button>
+                  <button class="btn btn-secondary btn-sm">連線測試</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 連接器市集 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">連接器市集</span>
+        <input class="f-input" placeholder="搜尋連接器..." style="width:200px;padding:5px 9px;font-size:11px"/>
+      </div>
+      <div class="card-body">
+        <div class="connector-grid">
+          <div class="connector-card">
+            <div class="connector-logo" style="background:#FFF3E0;color:#E65100">EC</div>
+            <div class="connector-name">ECOUNT ERP</div>
+            <div class="connector-desc">庫存、訂單、採購管理</div>
+          </div>
+          <div class="connector-card">
+            <div class="connector-logo" style="background:#E8F5E9;color:#1B5E20">104</div>
+            <div class="connector-name">104 HR</div>
+            <div class="connector-desc">人資系統、薪資、出勤</div>
+          </div>
+          <div class="connector-card">
+            <div class="connector-logo" style="background:#E8F0FE;color:#1565C0">GW</div>
+            <div class="connector-name">Google Workspace</div>
+            <div class="connector-desc">行事曆、試算表、雲端硬碟</div>
+          </div>
+          <div class="connector-card">
+            <div class="connector-logo" style="background:#FCE4EC;color:#880E4F">SF</div>
+            <div class="connector-name">Salesforce CRM</div>
+            <div class="connector-desc">客戶關係管理、商機追蹤</div>
+          </div>
+          <div class="connector-card">
+            <div class="connector-logo" style="background:#F3E5F5;color:#4A148C">OD</div>
+            <div class="connector-name">Odoo ERP</div>
+            <div class="connector-desc">通用 ERP 連接器</div>
+          </div>
+          <div class="connector-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);gap:4px;padding:20px">
+            <div style="font-size:20px">＋</div>
+            <div style="font-size:11px">自訂 API 連接器</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ 新增連接器 Wizard（完整五步驟） ════ -->
+    <div id="wizard" style="display:none;margin-top:16px">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+
+        <!-- Header -->
+        <div style="background:var(--hover);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:600;font-size:13px">新增連接器</span>
+          <button class="btn btn-secondary btn-sm" onclick="closeWizard()">取消</button>
+        </div>
+
+        <!-- Step bar -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border)">
+          <div class="wizard-step active" id="ws1"><span class="wizard-step-num">1 </span>選擇系統</div>
+          <div class="wizard-step" id="ws2"><span class="wizard-step-num">2 </span><span id="ws2-label">輸入憑證</span></div>
+          <div class="wizard-step" id="ws3"><span class="wizard-step-num">3 </span><span id="ws3-label">讀取欄位</span></div>
+          <div class="wizard-step" id="ws4"><span class="wizard-step-num">4 </span>欄位對應</div>
+          <div class="wizard-step" id="ws5"><span class="wizard-step-num">5 </span>完成</div>
+        </div>
+
+        <!-- ── Step 1：選擇系統 ── -->
+        <div id="wstep-1" style="padding:20px">
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">選擇要連接的外部系統，或選擇自訂 API 手動填寫</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+            <div class="connector-card" id="sel-ec" onclick="selectConnector('ec')" style="cursor:pointer">
+              <div class="connector-logo" style="background:#FFF3E0;color:#E65100">EC</div>
+              <div class="connector-name">ECOUNT ERP</div>
+              <div class="connector-desc">庫存、訂單、採購管理</div>
+            </div>
+            <div class="connector-card" id="sel-104" onclick="selectConnector('104')" style="cursor:pointer">
+              <div class="connector-logo" style="background:#E8F5E9;color:#1B5E20">104</div>
+              <div class="connector-name">104 HR</div>
+              <div class="connector-desc">人資系統、薪資、出勤</div>
+            </div>
+            <div class="connector-card" id="sel-gw" onclick="selectConnector('gw')" style="cursor:pointer">
+              <div class="connector-logo" style="background:#E8F0FE;color:#1565C0">GW</div>
+              <div class="connector-name">Google Workspace</div>
+              <div class="connector-desc">行事曆、試算表、雲端硬碟</div>
+            </div>
+            <div class="connector-card" id="sel-sf" onclick="selectConnector('sf')" style="cursor:pointer">
+              <div class="connector-logo" style="background:#FCE4EC;color:#880E4F">SF</div>
+              <div class="connector-name">Salesforce CRM</div>
+              <div class="connector-desc">客戶關係管理、商機追蹤</div>
+            </div>
+            <div class="connector-card" id="sel-od" onclick="selectConnector('od')" style="cursor:pointer">
+              <div class="connector-logo" style="background:#F3E5F5;color:#4A148C">OD</div>
+              <div class="connector-name">Odoo ERP</div>
+              <div class="connector-desc">通用 ERP 連接器</div>
+            </div>
+            <div class="connector-card" id="sel-custom" onclick="selectConnector('custom')" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);gap:4px;cursor:pointer">
+              <div style="font-size:20px">＋</div>
+              <div style="font-size:11px;font-weight:500">自訂 API 連接器</div>
+            </div>
+          </div>
+          <div id="sel-hint" style="font-size:11px;color:var(--text-muted);margin-bottom:10px">尚未選擇系統</div>
+
+          <!-- 連接器類型選擇 -->
+          <div id="connector-type-row" style="display:none;margin-bottom:14px">
+            <div class="f-label" style="margin-bottom:6px">連接器類型</div>
+            <div style="display:flex;gap:8px">
+              <div id="type-api" onclick="selectType('api')" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:12px">
+                <div style="font-weight:500;margin-bottom:2px">API 拉取型</div>
+                <div style="font-size:10px;color:var(--text-muted)">CB 主動呼叫外部系統 API 拿資料</div>
+              </div>
+              <div id="type-webhook" onclick="selectType('webhook')" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:12px">
+                <div style="font-weight:500;margin-bottom:2px">Webhook 接收型</div>
+                <div style="font-size:10px;color:var(--text-muted)">外部系統主動推送事件到 CB</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+            <button class="btn btn-secondary" onclick="closeWizard()">取消</button>
+            <button class="btn btn-primary" id="ws1-next" onclick="goWizardStep(2)" disabled style="opacity:.4">下一步</button>
+          </div>
+        </div>
+
+        <!-- ── Step 2A：輸入憑證（API 拉取型） ── -->
+        <div id="wstep-2" style="display:none;padding:20px">
+          <div id="step2-api">
+            <div class="f-row">
+              <label class="f-label">連接器名稱</label>
+              <input class="f-input" placeholder="例如：台北倉 ERP" />
+              <div class="f-hint">用來在後台識別這個連接器</div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:12px 0"></div>
+            <div class="f-group">
+              <div class="f-row" style="margin:0">
+                <label class="f-label">驗證方式</label>
+                <select class="f-select" id="w-auth" onchange="toggleAuthFields()">
+                  <option value="apikey">API Key（Header）</option>
+                  <option value="bearer">Bearer Token</option>
+                  <option value="basic">Basic Auth</option>
+                  <option value="oauth">OAuth 2.0</option>
+                </select>
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">API 基礎網址</label>
+                <input class="f-input" placeholder="https://api.example.com/v1" />
+              </div>
+            </div>
+            <div id="auth-apikey">
+              <div class="f-group">
+                <div class="f-row" style="margin:0">
+                  <label class="f-label">API Key</label>
+                  <input class="f-input" type="password" placeholder="輸入 API Key" />
+                </div>
+                <div class="f-row" style="margin:0">
+                  <label class="f-label">Company Code（選填）</label>
+                  <input class="f-input" placeholder="部分系統需要" />
+                </div>
+              </div>
+            </div>
+            <div id="auth-bearer" style="display:none">
+              <div class="f-row"><label class="f-label">Bearer Token</label><input class="f-input" type="password" placeholder="輸入 Token" /></div>
+            </div>
+            <div id="auth-basic" style="display:none">
+              <div class="f-group">
+                <div class="f-row" style="margin:0"><label class="f-label">帳號</label><input class="f-input" placeholder="Username" /></div>
+                <div class="f-row" style="margin:0"><label class="f-label">密碼</label><input class="f-input" type="password" placeholder="Password" /></div>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:12px 0"></div>
+            <div class="f-group">
+              <div class="f-row" style="margin:0"><label class="f-label">請求逾時（秒）</label><input class="f-input" value="10" type="number" /></div>
+              <div class="f-row" style="margin:0"><label class="f-label">重試次數</label><input class="f-input" value="3" type="number" /></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+              <button class="btn btn-secondary" onclick="goWizardStep(1)">上一步</button>
+              <button class="btn btn-primary" onclick="goWizardStep(3)">下一步（讀取欄位）</button>
+            </div>
+          </div>
+
+          <!-- Step 2B：Webhook 接收型 -->
+          <div id="step2-webhook" style="display:none">
+            <div class="f-row">
+              <label class="f-label">連接器名稱</label>
+              <input class="f-input" placeholder="例如：NuEip 考勤推送" />
+              <div class="f-hint">用來在後台識別這個連接器</div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:12px 0"></div>
+            <div class="notice notice-info" style="margin-bottom:14px">
+              這是「Webhook 接收型」連接器。CB 會產生一組接收網址，請將網址和 API Key 填入外部系統的 Webhook 設定頁面，外部系統就可以主動推送事件到 CB。
+            </div>
+            <div class="f-row">
+              <label class="f-label">CB Webhook 接收網址（複製後貼到外部系統）</label>
+              <div style="display:flex;align-items:center;gap:8px;background:var(--hover);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
+                <span style="font-family:monospace;font-size:11px;flex:1;word-break:break-all;color:var(--text)">https://coolbe.com/integrations/webhook/wh_8f2a1c</span>
+                <button class="btn btn-secondary btn-sm" onclick="this.textContent='已複製 ✓';setTimeout(()=>this.textContent='複製',2000)">複製</button>
+              </div>
+              <div class="f-hint">外部系統工程師需將此網址填入 Webhook 設定欄位</div>
+            </div>
+            <div class="f-row">
+              <label class="f-label">API Key（外部系統推送時需帶入 Header：X-API-Key）</label>
+              <div style="display:flex;align-items:center;gap:8px;background:var(--hover);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px">
+                <span style="font-family:monospace;font-size:11px;flex:1;color:var(--text)">sk_live_xxxxxxxxxxxx3f9d</span>
+                <button class="btn btn-secondary btn-sm" onclick="this.textContent='已複製 ✓';setTimeout(()=>this.textContent='複製',2000)">複製</button>
+                <button class="btn btn-secondary btn-sm" style="color:var(--danger);border-color:var(--danger-soft)">重新產生</button>
+              </div>
+              <div class="f-hint">請妥善保管，勿洩漏給未授權人員</div>
+            </div>
+            <div style="background:var(--warning-soft);border:1px solid #FDE68A;border-radius:var(--radius);padding:10px 14px;font-size:11px;color:#78350F;margin-bottom:4px">
+              <div style="font-weight:500;margin-bottom:4px">給外部系統工程師的串接說明</div>
+              請在每次推送時帶上 Header：<code style="background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;font-size:10px">X-API-Key: sk_live_xxxxxxxxxxxx3f9d</code><br>
+              推送格式為 JSON，欄位可自訂，CB 將在下一步讀取欄位清單。
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px;margin-top:14px">
+              <button class="btn btn-secondary" onclick="goWizardStep(1)">上一步</button>
+              <button class="btn btn-primary" onclick="goWizardStep(3)">已設定完成，下一步（等待測試推送）</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Step 3A：讀取欄位（API 拉取型 Loading） ── -->
+        <div id="wstep-3" style="display:none;padding:20px">
+          <div id="step3-api">
+            <div style="text-align:center;padding:32px 0">
+              <div style="font-size:32px;margin-bottom:10px">⏳</div>
+              <div style="font-size:14px;font-weight:500;margin-bottom:4px">正在讀取外部欄位</div>
+              <div style="font-size:12px;color:var(--text-muted)">連接外部系統中，約需 2–5 秒...</div>
+              <div style="margin-top:16px;height:4px;background:var(--border);border-radius:99px;overflow:hidden;max-width:260px;margin-left:auto;margin-right:auto">
+                <div style="height:100%;background:var(--primary);border-radius:99px;animation:progress 2s ease-in-out infinite"></div>
+              </div>
+            </div>
+            <div id="ws3-fail" style="display:none">
+              <div class="notice" style="background:var(--danger-soft);color:#7F1D1D;border-left:3px solid var(--danger);border-radius:0 var(--radius) var(--radius) 0;margin-bottom:14px">
+                無法連接外部系統。請確認 API 網址和憑證是否正確，然後返回修改。<br>
+                <span style="font-size:10px;color:var(--danger)">錯誤：401 Unauthorized</span>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+              <button class="btn btn-secondary" onclick="goWizardStep(2)">返回修改憑證</button>
+              <button class="btn btn-primary" onclick="goWizardStep(4)">下一步（模擬讀取成功）</button>
+            </div>
+          </div>
+
+          <!-- Step 3B：Webhook 等待測試推送 -->
+          <div id="step3-webhook" style="display:none">
+            <div class="notice notice-info" style="margin-bottom:16px">
+              請至外部系統後台，手動觸發一次 Webhook 推送到 CB。CB 收到後會自動解析欄位，頁面將自動更新。
+            </div>
+
+            <!-- 等待中狀態 -->
+            <div id="ws3-waiting">
+              <div style="text-align:center;padding:20px 0 16px">
+                <div style="font-size:28px;margin-bottom:8px">⏳</div>
+                <div style="font-size:14px;font-weight:500;margin-bottom:4px">等待外部系統發送測試資料</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">CB 正在監聽接收端，一旦收到推送將自動顯示</div>
+                <div style="background:var(--hover);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-family:monospace;font-size:11px;color:var(--text-secondary);text-align:left;max-width:420px;margin:0 auto 12px">
+                  <div style="color:var(--text-muted);margin-bottom:4px"># 接收紀錄</div>
+                  <div style="color:var(--warning)">等待中... 尚未收到任何推送</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+                <button class="btn btn-secondary" onclick="goWizardStep(2)">上一步</button>
+                <button class="btn btn-secondary" onclick="simulateWebhookReceived()" style="color:var(--primary);border-color:var(--primary)">模擬收到測試推送</button>
+                <button class="btn btn-primary" id="ws3-wh-next" onclick="goWizardStep(4)" disabled style="opacity:.4">下一步（等待資料）</button>
+              </div>
+            </div>
+
+            <!-- 收到資料狀態 -->
+            <div id="ws3-received" style="display:none">
+              <div class="notice notice-success" style="margin-bottom:14px">成功收到測試推送！解析到 4 個欄位，可以繼續進行欄位對應。</div>
+              <div style="background:var(--hover);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-family:monospace;font-size:11px;color:var(--text-secondary);margin-bottom:12px">
+                <div style="color:var(--text-muted);margin-bottom:4px"># 收到推送（14:32:05）</div>
+                <div style="color:var(--success)">{</div>
+                <div style="color:var(--success);padding-left:12px">"event": "attendance_punch",</div>
+                <div style="color:var(--success);padding-left:12px">"employee_id": "U001",</div>
+                <div style="color:var(--success);padding-left:12px">"punch_time": "2026-06-20T14:32",</div>
+                <div style="color:var(--success);padding-left:12px">"punch_type": "clock_in"</div>
+                <div style="color:var(--success)">}</div>
+              </div>
+              <div style="font-size:11px;font-weight:500;margin-bottom:6px">解析到的欄位</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+                <span class="badge badge-primary">event</span>
+                <span class="badge badge-primary">employee_id</span>
+                <span class="badge badge-primary">punch_time</span>
+                <span class="badge badge-primary">punch_type</span>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+                <button class="btn btn-secondary" onclick="goWizardStep(2)">上一步</button>
+                <button class="btn btn-primary" onclick="goWizardStep(4)">下一步（欄位對應）</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Step 4：欄位對應 ── -->
+        <div id="wstep-4" style="display:none;padding:20px">
+          <div class="notice notice-success" style="margin-bottom:14px">成功讀取到 8 個外部系統欄位，請對應到 CB 標準欄位（不需要的欄位可以不對應）</div>
+          <div style="display:grid;grid-template-columns:1fr 28px 1fr 30px;gap:6px;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--text-muted)">
+            <span>外部系統欄位（ECOUNT）</span><span></span><span>CB 標準欄位名稱</span><span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+            <div class="map-row"><select class="f-select" style="font-size:11px"><option>item_code</option><option>item_name</option><option>qty_remaining</option><option>warehouse_id</option><option>last_updated</option></select><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>商品編號</option><option>（不對應）</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><select class="f-select" style="font-size:11px"><option>item_name</option><option>item_code</option></select><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>商品名稱</option><option>（不對應）</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><select class="f-select" style="font-size:11px"><option>qty_remaining</option><option>item_code</option></select><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>庫存數量</option><option>（不對應）</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><select class="f-select" style="font-size:11px"><option>warehouse_id</option><option>item_code</option></select><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>倉庫</option><option>（不對應）</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><select class="f-select" style="font-size:11px"><option>last_updated</option><option>item_code</option></select><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>最後更新時間</option><option>（不對應）</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+          </div>
+          <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-bottom:4px">＋ 新增對應欄位</div>
+          <div class="f-hint">欄位對應之後可以在連接器詳情頁「欄位對應」Tab 繼續調整</div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px;margin-top:12px">
+            <button class="btn btn-secondary" onclick="goWizardStep(3)">上一步</button>
+            <button class="btn btn-primary" onclick="goWizardStep(5)">連線測試並完成</button>
+          </div>
+        </div>
+
+        <!-- ── Step 5：完成 ── -->
+        <div id="wstep-5" style="display:none;padding:20px">
+          <div style="text-align:center;padding:24px 0">
+            <div style="font-size:36px;margin-bottom:10px">✅</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px">連接器建立成功</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ECOUNT ERP 已成功連接，可以開始在觸發引擎設定推播條件</div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:12px">
+            <div style="display:grid;grid-template-columns:100px 1fr;gap:5px 10px">
+              <span style="color:var(--text-muted)">連接器名稱</span><span style="font-weight:500">台北倉 ERP</span>
+              <span style="color:var(--text-muted)">系統類型</span><span>ERP（ECOUNT）</span>
+              <span style="color:var(--text-muted)">已對應欄位</span><span>5 個欄位</span>
+              <span style="color:var(--text-muted)">連線測試</span><span style="color:var(--success)">HTTP 200 · 231ms</span>
+            </div>
+          </div>
+          <div class="notice notice-info" style="margin-bottom:16px">
+            接下來可以前往「10.2 觸發引擎」設定何時觸發推播，或至連接器詳情頁的「動作設定」定義寫入動作。
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+            <button class="btn btn-secondary" onclick="closeWizard()">關閉</button>
+            <button class="btn btn-primary" onclick="closeWizard(); showPage('10.2')">前往觸發引擎設定</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 10.1-detail 連接器詳情 ════ -->
+  <div id="page-10.1-detail" class="page" style="display:none">
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">
+          <span style="cursor:pointer;color:var(--primary)" onclick="showPage('10.1')">整合中台 › 10.1 連接器管理</span> › 詳情
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+          <div style="width:36px;height:36px;border-radius:8px;background:#FFF3E0;color:#E65100;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">EC</div>
+          <div>
+            <div style="font-size:18px;font-weight:600">台北倉 ERP</div>
+            <div style="font-size:11px;color:var(--text-muted)">ECOUNT ERP · 建立於 2026-06-01 · 建立者：Ricky</div>
+          </div>
+          <span class="badge badge-success" style="margin-left:4px">連線正常</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-secondary btn-sm">刪除連接器</button>
+        <button class="btn btn-primary btn-sm">儲存變更</button>
+      </div>
+    </div>
+
+    <!-- Tab bar + panels -->
+    <div class="card" style="margin-bottom:0;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-bottom:none">
+      <div class="tab-nav" style="padding:0 16px;margin-bottom:0">
+        <div class="tab-btn active" onclick="switchDetailTab('info', this)">基本資訊</div>
+        <div class="tab-btn" onclick="switchDetailTab('fields', this)">欄位對應</div>
+        <div class="tab-btn" onclick="switchDetailTab('actions', this)">動作設定</div>
+        <div class="tab-btn" onclick="switchDetailTab('test', this)">連線測試</div>
+      </div>
+    </div>
+    <div class="card" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);border-top:none;margin-bottom:16px">
+
+      <!-- Tab 1：基本資訊 -->
+      <div class="tab-panel active" id="detail-info">
+        <div class="card-body">
+          <div class="f-group" style="margin-bottom:12px">
+            <div class="f-row" style="margin:0">
+              <label class="f-label">連接器名稱</label>
+              <input class="f-input" value="台北倉 ERP" />
+            </div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">系統類型</label>
+              <select class="f-select"><option>ERP</option><option>HR</option><option>CRM</option><option>協作工具</option><option>其他</option></select>
+            </div>
+          </div>
+          <div class="f-row">
+            <label class="f-label">API 基礎網址</label>
+            <input class="f-input" value="https://api.ecount.com/v2" />
+          </div>
+          <div class="f-group">
+            <div class="f-row" style="margin:0">
+              <label class="f-label">驗證方式</label>
+              <select class="f-select"><option>API Key（Header）</option><option>Bearer Token</option><option>Basic Auth</option><option>OAuth 2.0</option></select>
+            </div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">API Key</label>
+              <input class="f-input" value="••••••••••••3f9d" type="password" />
+              <div class="f-hint">憑證以 AES-256 加密儲存，不會以明文顯示</div>
+            </div>
+          </div>
+          <div class="f-row">
+            <label class="f-label">Company Code（選填）</label>
+            <input class="f-input" value="CB001" />
+            <div class="f-hint">部分 ERP 系統需要額外的組織識別碼</div>
+          </div>
+          <div style="height:1px;background:var(--border);margin:14px 0"></div>
+          <div class="f-group">
+            <div class="f-row" style="margin:0">
+              <label class="f-label">請求逾時（秒）</label>
+              <input class="f-input" value="10" type="number" />
+              <div class="f-hint">查詢型建議 5 秒，回寫型建議 10 秒</div>
+            </div>
+            <div class="f-row" style="margin:0">
+              <label class="f-label">重試次數</label>
+              <input class="f-input" value="3" type="number" />
+              <div class="f-hint">失敗後最多重試幾次（4xx 不重試）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2：欄位對應 -->
+      <div class="tab-panel" id="detail-fields">
+        <div class="card-body">
+          <div class="notice notice-info" style="margin-bottom:14px">定義外部系統欄位名稱與 CB 標準欄位的對應關係，讓 CB 能正確解讀外部系統回傳的資料。</div>
+          <div style="display:grid;grid-template-columns:1fr 28px 1fr 30px;gap:6px;margin-bottom:6px">
+            <div class="f-label" style="margin:0">外部系統欄位（ECOUNT 原始名稱）</div>
+            <div></div>
+            <div class="f-label" style="margin:0">CB 標準欄位名稱</div>
+            <div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+            <div class="map-row"><input class="f-input" style="font-size:11px" value="item_code"/><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>商品編號</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><input class="f-input" style="font-size:11px" value="item_name"/><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>商品名稱</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><input class="f-input" style="font-size:11px" value="qty_remaining"/><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>庫存數量</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><input class="f-input" style="font-size:11px" value="warehouse_id"/><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>倉庫</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+            <div class="map-row"><input class="f-input" style="font-size:11px" value="last_updated"/><span class="map-arrow">→</span><select class="f-select" style="font-size:11px"><option>最後更新時間</option></select><button class="btn btn-danger btn-sm btn-icon">✕</button></div>
+          </div>
+          <div style="font-size:11px;color:var(--primary);cursor:pointer">＋ 新增欄位對應</div>
+        </div>
+      </div>
+
+      <!-- Tab 3：動作設定 -->
+      <div class="tab-panel" id="detail-actions">
+        <div class="card-body">
+          <div class="notice notice-info" style="margin-bottom:12px">定義這個連接器可以執行哪些「寫入或查詢動作」，設定完成後才能在 5.3 Bot 選單設定的「呼叫連接器」中選擇。</div>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+            <button class="btn btn-primary btn-sm" onclick="toggleNewActionForm()">＋ 新增動作</button>
+          </div>
+
+          <!-- 新增動作表單 -->
+          <div id="new-action-form-2" style="display:none;border:1px solid var(--primary);border-radius:var(--radius);padding:14px;background:var(--primary-soft);margin-bottom:14px">
+            <div style="font-size:12px;font-weight:600;color:var(--primary);margin-bottom:12px">新增動作</div>
+            <div class="f-group" style="margin-bottom:10px">
+              <div class="f-row" style="margin:0">
+                <label class="f-label">動作名稱（顯示在 Bot 選單設定）</label>
+                <input class="f-input" style="background:#fff" placeholder="例如：建立補貨申請" />
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">動作識別碼（英文，給系統用）</label>
+                <input class="f-input" style="background:#fff" placeholder="例如：create_purchase_order" />
+              </div>
+            </div>
+            <div class="f-group" style="margin-bottom:10px">
+              <div class="f-row" style="margin:0">
+                <label class="f-label">HTTP 方法</label>
+                <select class="f-select" style="background:#fff"><option>POST</option><option>GET</option><option>PATCH</option><option>PUT</option><option>DELETE</option></select>
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">API 路徑（相對於基礎網址）</label>
+                <input class="f-input" style="background:#fff" placeholder="例如：/purchase-orders" />
+                <div class="f-hint" style="color:#1D4ED8">完整網址 = 基礎網址 + 此路徑</div>
+              </div>
+            </div>
+            <div style="height:1px;background:#BFDBFE;margin:10px 0"></div>
+            <div style="font-size:11px;font-weight:500;margin-bottom:8px">參數定義</div>
+            <div style="display:grid;grid-template-columns:1fr 80px 1fr 80px 28px;gap:6px;margin-bottom:5px;font-size:10px;font-weight:600;color:var(--text-muted)">
+              <span>參數名稱</span><span>資料類型</span><span>說明</span><span>必填/選填</span><span></span>
+            </div>
+            <div id="new-param-rows">
+              <div style="display:grid;grid-template-columns:1fr 80px 1fr 80px 28px;gap:6px;align-items:center;margin-bottom:5px">
+                <input class="f-input" style="font-size:11px;background:#fff" placeholder="item_code" />
+                <select class="f-select" style="font-size:11px;background:#fff"><option>String</option><option>Number</option><option>Boolean</option></select>
+                <input class="f-input" style="font-size:11px;background:#fff" placeholder="說明" />
+                <select class="f-select" style="font-size:11px;background:#fff"><option>必填</option><option>選填</option></select>
+                <button class="btn btn-danger btn-sm btn-icon">✕</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-bottom:12px" onclick="addParamRow()">＋ 新增參數</div>
+            <div style="display:flex;justify-content:flex-end;gap:6px">
+              <button class="btn btn-secondary btn-sm" onclick="toggleNewActionForm()">取消</button>
+              <button class="btn btn-primary btn-sm">儲存動作</button>
+            </div>
+          </div>
+
+          <!-- 已定義動作：建立補貨申請 -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--hover);border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleActionBody('ab1','aa1')">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:#E3F2FD;color:#0D47A1">POST</span>
+                  <span style="font-size:12px;font-weight:600">建立補貨申請</span>
+                  <code style="font-size:10px;color:var(--text-muted)">create_purchase_order</code>
+                </div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px">/purchase-orders · 2 個必填，1 個選填</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="badge badge-success">使用中（3 個 Bot 選單）</span>
+                <span id="aa1" style="color:var(--text-muted);font-size:11px">▲</span>
+              </div>
+            </div>
+            <div id="ab1" style="padding:12px">
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--text-muted)">
+                <span>參數名稱</span><span>類型</span><span>說明</span><span>必填</span>
+              </div>
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--hover);font-size:11px">
+                <div><span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px"></span><code>item_code</code></div>
+                <div style="color:var(--text-muted)">String</div>
+                <div style="color:var(--text-secondary)">商品編號</div>
+                <span class="badge badge-danger">必填</span>
+              </div>
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--hover);font-size:11px">
+                <div><span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px"></span><code>qty</code></div>
+                <div style="color:var(--text-muted)">Number</div>
+                <div style="color:var(--text-secondary)">補貨數量</div>
+                <span class="badge badge-danger">必填</span>
+              </div>
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;align-items:center;padding:5px 0;font-size:11px">
+                <div><span style="width:6px;height:6px;border-radius:50%;background:var(--text-muted);display:inline-block;margin-right:4px"></span><code>warehouse_id</code></div>
+                <div style="color:var(--text-muted)">String</div>
+                <div style="color:var(--text-secondary)">指定倉庫（預設台北一倉）</div>
+                <span class="badge badge-gray">選填</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btn btn-secondary btn-sm">編輯</button>
+                <button class="btn btn-danger btn-sm">刪除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 已定義動作：查詢商品庫存 -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--hover);cursor:pointer" onclick="toggleActionBody('ab2','aa2')">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:#E8F5E9;color:#1B5E20">GET</span>
+                  <span style="font-size:12px;font-weight:600">查詢商品庫存</span>
+                  <code style="font-size:10px;color:var(--text-muted)">get_inventory</code>
+                </div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px">/inventory · 1 個必填</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="badge badge-success">使用中（1 個關鍵字設定）</span>
+                <span id="aa2" style="color:var(--text-muted);font-size:11px">▼</span>
+              </div>
+            </div>
+            <div id="ab2" style="display:none;padding:12px">
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;align-items:center;padding:5px 0;font-size:11px">
+                <div><span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px"></span><code>item_name</code></div>
+                <div style="color:var(--text-muted)">String</div>
+                <div style="color:var(--text-secondary)">商品名稱（員工輸入的查詢關鍵字）</div>
+                <span class="badge badge-danger">必填</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btn btn-secondary btn-sm">編輯</button>
+                <button class="btn btn-danger btn-sm">刪除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 已定義動作：更新庫存數量 -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--hover);cursor:pointer" onclick="toggleActionBody('ab3','aa3')">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:#FFF3E0;color:#E65100">PATCH</span>
+                  <span style="font-size:12px;font-weight:600">更新庫存數量</span>
+                  <code style="font-size:10px;color:var(--text-muted)">update_inventory</code>
+                </div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px">/inventory/{item_code} · 1 個必填</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="badge badge-gray">未使用</span>
+                <span id="aa3" style="color:var(--text-muted);font-size:11px">▼</span>
+              </div>
+            </div>
+            <div id="ab3" style="display:none;padding:12px">
+              <div style="display:grid;grid-template-columns:140px 70px 1fr 60px;gap:8px;align-items:center;padding:5px 0;font-size:11px">
+                <div><span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px"></span><code>qty</code></div>
+                <div style="color:var(--text-muted)">Number</div>
+                <div style="color:var(--text-secondary)">新的庫存數量</div>
+                <span class="badge badge-danger">必填</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btn btn-secondary btn-sm">編輯</button>
+                <button class="btn btn-danger btn-sm">刪除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4：連線測試 -->
+      <div class="tab-panel" id="detail-test">
+        <div class="card-body">
+          <div class="notice notice-success" style="margin-bottom:14px">上次連線測試：今天 14:31 · 全部通過</div>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <button class="btn btn-primary btn-sm">重新測試</button>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px">
+              <div><div style="font-weight:500">API 基礎連線</div><div style="font-size:10px;color:var(--text-muted)">GET https://api.ecount.com/v2/ping</div></div>
+              <span class="badge badge-success">HTTP 200 · 231ms</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px">
+              <div><div style="font-weight:500">API Key 驗證</div><div style="font-size:10px;color:var(--text-muted)">驗證憑證是否有效</div></div>
+              <span class="badge badge-success">驗證成功</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px">
+              <div><div style="font-weight:500">欄位讀取測試</div><div style="font-size:10px;color:var(--text-muted)">確認欄位對應設定正確</div></div>
+              <span class="badge badge-success">5 個欄位均正常</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px">
+              <div><div style="font-weight:500">動作測試：建立補貨申請</div><div style="font-size:10px;color:var(--text-muted)">POST /purchase-orders（測試模式，不實際寫入）</div></div>
+              <span class="badge badge-success">HTTP 201 · 445ms</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;font-size:12px">
+              <div><div style="font-weight:500">動作測試：查詢商品庫存</div><div style="font-size:10px;color:var(--text-muted)">GET /inventory?item_name=測試商品</div></div>
+              <span class="badge badge-success">HTTP 200 · 187ms</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted)">測試紀錄保留 7 天 · 每次儲存變更後建議重新執行測試</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════ 10.2 觸發引擎 ════ -->
+  <div id="page-10.2" class="page" style="display:none">
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">整合中台 › 10.2</div>
+        <div class="page-title">觸發引擎</div>
+        <div class="page-desc">設定何時觸發、觸發後做什麼（Bot 推播 / 外部系統回寫）</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="showTriggerForm()">＋ 新增觸發條件</button>
+    </div>
+
+    <!-- 觸發條件列表 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">觸發條件列表（2）</span>
+        <div style="display:flex;gap:6px">
+          <select class="f-select" style="width:140px;padding:4px 8px;font-size:11px"><option>全部連接器</option></select>
+          <select class="f-select" style="width:100px;padding:4px 8px;font-size:11px"><option>全部狀態</option></select>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>名稱</th>
+              <th>連接器</th>
+              <th>觸發方式</th>
+              <th>觸發條件</th>
+              <th>動作</th>
+              <th>狀態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500">庫存低量警報</td>
+              <td>台北倉 ERP</td>
+              <td><span class="badge badge-primary">條件觸發</span></td>
+              <td>
+                <div class="rule-chip">庫存數量 <span class="rule-op">&lt;</span> 10</div>
+              </td>
+              <td>Bot 推播</td>
+              <td><span class="status-dot dot-success"></span><span class="badge badge-success">啟用</span></td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm" onclick="showTriggerForm()">編輯</button>
+                  <button class="btn btn-secondary btn-sm">停用</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:500">每日出勤同步</td>
+              <td>104 HR</td>
+              <td><span class="badge badge-gray">排程觸發</span></td>
+              <td>
+                <div class="rule-chip">每日 00:30</div>
+              </td>
+              <td>外部系統回寫</td>
+              <td><span class="status-dot dot-warning"></span><span class="badge badge-warning">停用</span></td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm">編輯</button>
+                  <button class="btn btn-primary btn-sm">啟用</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 新增觸發條件表單（展開） -->
+    <div id="trigger-form" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">新增觸發條件</span>
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('trigger-form').style.display='none'">取消</button>
+        </div>
+        <div class="card-body">
+
+          <!-- Step 1：觸發來源 -->
+          <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text-secondary)">① 觸發來源</div>
+          <div class="f-group">
+            <div class="f-row">
+              <label class="f-label">連接器</label>
+              <select class="f-select"><option>台北倉 ERP（ECOUNT）</option></select>
+            </div>
+            <div class="f-row">
+              <label class="f-label">觸發名稱</label>
+              <input class="f-input" placeholder="例如：庫存低量警報" value="庫存低量警報" />
+            </div>
+          </div>
+
+          <div class="f-row">
+            <label class="f-label">觸發方式</label>
+            <div class="radio-group">
+              <div class="radio-item selected" onclick="showTriggerCondition()">
+                <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                <div>
+                  <div class="radio-label">條件觸發</div>
+                  <div class="radio-sub">當資料符合設定條件時自動觸發</div>
+                </div>
+              </div>
+              <div class="radio-item" onclick="showTriggerSchedule()">
+                <div class="radio-dot"></div>
+                <div>
+                  <div class="radio-label">排程觸發</div>
+                  <div class="radio-sub">定時自動執行</div>
+                </div>
+              </div>
+              <div class="radio-item">
+                <div class="radio-dot"></div>
+                <div>
+                  <div class="radio-label">Webhook 接收</div>
+                  <div class="radio-sub">外部系統主動呼叫 CB 的 API <span class="phase-tag phase-2a">M1</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 條件觸發設定（展開） -->
+          <div id="trigger-condition" style="background:var(--hover);border-radius:var(--radius);padding:12px;margin-bottom:14px">
+            <div style="font-size:11px;font-weight:500;margin-bottom:8px">觸發條件設定</div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="font-size:11px;color:var(--text-secondary)">當</span>
+              <select class="f-select" style="width:130px;font-size:11px"><option>庫存數量</option></select>
+              <select class="f-select" style="width:70px;font-size:11px"><option>小於（&lt;）</option></select>
+              <input class="f-input" style="width:70px;font-size:11px" value="10" />
+              <span style="font-size:11px;color:var(--text-secondary)">時觸發</span>
+              <button class="btn btn-secondary btn-sm">＋ 新增條件</button>
+            </div>
+            <div style="margin-top:10px">
+              <label class="f-label">觸發頻率</label>
+              <select class="f-select" style="width:220px"><option>每次資料更新時檢查</option><option>每 5 分鐘</option><option>每小時</option></select>
+            </div>
+          </div>
+
+          <!-- 排程觸發設定（隱藏） -->
+          <div id="trigger-schedule" style="display:none;background:var(--hover);border-radius:var(--radius);padding:12px;margin-bottom:14px">
+            <div class="f-group-3">
+              <div class="f-row" style="margin:0">
+                <label class="f-label">執行頻率</label>
+                <select class="f-select"><option>每日</option><option>每週</option><option>每月</option></select>
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">執行時間</label>
+                <input class="f-input" type="time" value="00:30" />
+              </div>
+              <div class="f-row" style="margin:0">
+                <label class="f-label">執行日</label>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">
+                  <label style="font-size:11px"><input type="checkbox" checked> 一</label>
+                  <label style="font-size:11px"><input type="checkbox" checked> 二</label>
+                  <label style="font-size:11px"><input type="checkbox" checked> 三</label>
+                  <label style="font-size:11px"><input type="checkbox" checked> 四</label>
+                  <label style="font-size:11px"><input type="checkbox" checked> 五</label>
+                  <label style="font-size:11px"><input type="checkbox"> 六</label>
+                  <label style="font-size:11px"><input type="checkbox"> 日</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Step 2：動作設定 -->
+          <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text-secondary)">② 觸發後執行的動作</div>
+          <div class="f-row">
+            <div class="radio-group">
+              <div class="radio-item selected">
+                <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                <div>
+                  <div class="radio-label">Bot 推播訊息給員工</div>
+                  <div class="radio-sub">透過 Bot 發送通知到指定聊天室或人員</div>
+                </div>
+              </div>
+              <div class="radio-item">
+                <div class="radio-dot"></div>
+                <div>
+                  <div class="radio-label">外部系統回寫 <span class="phase-tag phase-2b">M2 新增</span></div>
+                  <div class="radio-sub">將 CB 資料寫入外部系統（如薪資系統、ERP）</div>
+                </div>
+              </div>
+              <div class="radio-item">
+                <div class="radio-dot"></div>
+                <div>
+                  <div class="radio-label">Bot 推播 ＋ 外部系統回寫（同時執行）</div>
+                  <div class="radio-sub">通知員工的同時，也更新外部系統資料</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bot 路由 + 訊息模板（Phase 2B Content-Based Routing） -->
+          <div style="background:var(--hover);border-radius:var(--radius);padding:12px;margin-bottom:14px">
+            <div style="font-size:11px;font-weight:500;margin-bottom:10px">推送設定</div>
+
+            <div class="f-row">
+              <label class="f-label">使用 Bot</label>
+              <select class="f-select"><option>庫存警報 Bot</option></select>
+            </div>
+
+            <div class="f-row">
+              <label class="f-label">推送對象模式</label>
+              <div class="radio-group">
+                <div class="radio-item selected" id="mode-cbr" onclick="toggleRoutingMode('cbr')">
+                  <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+                  <div>
+                    <div class="radio-label">Content-Based Routing <span class="phase-tag phase-2b">Phase 2B</span></div>
+                    <div class="radio-sub">依每次收到的資料內容，決定推給誰（需設定路由規則）</div>
+                  </div>
+                </div>
+                <div class="radio-item" id="mode-fixed" onclick="toggleRoutingMode('fixed')">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-label">固定對象 <span class="phase-tag phase-2a">Phase 2A</span></div>
+                    <div class="radio-sub">每次都推送給同一個人或群組</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 固定對象設定（隱藏） -->
+            <div id="fixed-target" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:10px">
+              <div class="f-group-3">
+                <div>
+                  <label class="f-label">目標類型</label>
+                  <select class="f-select" style="font-size:11px"><option>群組</option><option>個人</option></select>
+                </div>
+                <div style="grid-column:span 2">
+                  <label class="f-label">推送對象</label>
+                  <select class="f-select" style="font-size:11px"><option>A倉管群組</option><option>B倉管群組</option><option>倉儲主管</option></select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content-Based Routing 規則 -->
+            <div id="cbr-rules" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                <div style="font-size:11px;font-weight:600;color:var(--text-secondary)">
+                  路由規則
+                  <span style="font-weight:400;color:var(--text-muted)">（依序判斷，第一個符合的規則生效）</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="addCBRRoute()">＋ 新增規則</button>
+              </div>
+
+              <!-- 規則 1 -->
+              <div class="cbr-rule" style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:6px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <span style="font-size:11px;color:var(--text-muted)">規則 1 · 條件間：</span>
+                    <div style="display:flex;gap:3px">
+                      <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;background:var(--primary);color:#fff;cursor:pointer">AND</span>
+                      <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer">OR</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-danger btn-sm" onclick="this.closest('.cbr-rule').remove()">刪除規則</button>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 110px 1fr 28px;gap:6px;align-items:center;margin-bottom:5px">
+                  <select class="f-select" style="font-size:11px"><option>倉庫</option><option>庫存數量</option><option>商品名稱</option></select>
+                  <select class="f-select" style="font-size:11px"><option>= 等於</option><option>≠ 不等於</option><option>＞ 大於</option><option>＜ 小於</option><option>包含</option><option>不包含</option><option>不為空</option></select>
+                  <input class="f-input" style="font-size:11px" value="台北一倉" />
+                  <button class="btn btn-danger btn-sm btn-icon">✕</button>
+                </div>
+                <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-bottom:8px">＋ 新增條件</div>
+                <div style="font-size:11px;font-weight:500;color:var(--text-secondary);margin-bottom:5px">則推送至</div>
+                <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:5px;max-width:300px">
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;background:var(--primary-soft);color:var(--primary);font-weight:500;cursor:pointer">固定群組</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">固定成員</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">動態成員</div>
+                </div>
+                <select class="f-select" style="font-size:11px"><option>A倉管群組</option><option>B倉管群組</option></select>
+              </div>
+
+              <!-- 規則 2 -->
+              <div class="cbr-rule" style="border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:6px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <span style="font-size:11px;color:var(--text-muted)">規則 2 · 條件間：</span>
+                    <div style="display:flex;gap:3px">
+                      <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;background:var(--primary);color:#fff;cursor:pointer">AND</span>
+                      <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer">OR</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-danger btn-sm" onclick="this.closest('.cbr-rule').remove()">刪除規則</button>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 110px 1fr 28px;gap:6px;align-items:center;margin-bottom:5px">
+                  <select class="f-select" style="font-size:11px"><option>庫存數量</option><option>倉庫</option></select>
+                  <select class="f-select" style="font-size:11px"><option>＜ 小於</option><option>= 等於</option></select>
+                  <input class="f-input" style="font-size:11px" value="5" />
+                  <button class="btn btn-danger btn-sm btn-icon">✕</button>
+                </div>
+                <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-bottom:8px">＋ 新增條件</div>
+                <div style="font-size:11px;font-weight:500;color:var(--text-secondary);margin-bottom:5px">則推送至</div>
+                <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:5px;max-width:300px">
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;background:var(--primary-soft);color:var(--primary);font-weight:500;cursor:pointer">固定群組</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">固定成員</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">動態成員</div>
+                </div>
+                <select class="f-select" style="font-size:11px"><option>倉儲主管 + CEO</option><option>倉儲主管</option></select>
+              </div>
+
+              <!-- 動態成員範例 -->
+              <div class="cbr-rule" style="border:1px solid #DDD6FE;border-radius:var(--radius);padding:10px;margin-bottom:6px;background:#FAFAFF">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:11px;color:var(--text-muted)">規則 3 <span class="phase-tag phase-2b">動態成員範例</span></span>
+                  <button class="btn btn-danger btn-sm" onclick="this.closest('.cbr-rule').remove()">刪除規則</button>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 110px 1fr 28px;gap:6px;align-items:center;margin-bottom:5px">
+                  <select class="f-select" style="font-size:11px"><option>employee_id</option></select>
+                  <select class="f-select" style="font-size:11px"><option>不為空</option></select>
+                  <input class="f-input" style="font-size:11px" placeholder="（任何值）" readonly />
+                  <button class="btn btn-danger btn-sm btn-icon">✕</button>
+                </div>
+                <div style="font-size:11px;font-weight:500;color:var(--text-secondary);margin-bottom:5px">則推送至</div>
+                <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:6px;max-width:300px">
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer">固定群組</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">固定成員</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;background:#EDE9FE;color:#5B21B6;font-weight:500;cursor:pointer;border-left:1px solid var(--border)">動態成員</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:6px">
+                  <span style="color:var(--text-secondary)">依資料欄位</span>
+                  <select class="f-select" style="font-size:11px;width:auto"><option>employee_id</option></select>
+                  <span style="color:var(--text-secondary)">查找對應的 LWS 成員</span>
+                </div>
+                <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:var(--radius);padding:7px 10px;font-size:10px;color:#3B2A6E">
+                  CB 會用資料裡的 <code style="background:rgba(0,0,0,0.06);padding:1px 4px;border-radius:3px">employee_id</code> 查詢成員對應表，找到 LWS userId 後發 1 對 1 訊息。<br>
+                  <span style="font-weight:600">前提：需先在「4.1 成員列表」設定每個成員的外部系統 ID 對應。</span>
+                </div>
+              </div>
+
+              <div id="cbr-new-rules"></div>
+
+              <!-- 兜底規則（不可刪除） -->
+              <div style="border:1px dashed var(--border-strong);border-radius:var(--radius);padding:10px">
+                <div style="font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:6px">兜底規則（以上規則都不符合時）</div>
+                <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:5px;max-width:300px">
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;background:var(--primary-soft);color:var(--primary);font-weight:500;cursor:pointer">固定成員</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">固定群組</div>
+                  <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">不推送</div>
+                </div>
+                <select class="f-select" style="font-size:11px"><option>倉儲主管</option></select>
+                <div class="f-hint" style="margin-top:4px">建議設定兜底規則，避免資料漏推</div>
+              </div>
+            </div>
+
+            <!-- 訊息模板 -->
+            <div class="f-row">
+              <label class="f-label">訊息模板</label>
+              <select class="f-select"><option>庫存警報卡片</option></select>
+            </div>
+            <!-- 模板變數填入 -->
+            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-top:8px">
+              <div style="font-size:10px;font-weight:500;color:var(--text-muted);margin-bottom:8px">模板變數填入</div>
+              <div style="display:grid;grid-template-columns:1fr 28px 1fr;gap:6px;align-items:center;margin-bottom:5px;font-size:10px;color:var(--text-muted)">
+                <span>模板變數</span><span></span><span>外部系統欄位</span>
+              </div>
+              <div class="map-row" style="margin-bottom:5px">
+                <div class="map-field"><div style="background:var(--hover);border-radius:3px;padding:3px 6px;font-size:11px">{{商品名稱}}</div></div>
+                <span class="map-arrow">←</span>
+                <div class="map-field"><select class="f-select" style="font-size:11px"><option>item_name</option></select></div>
+              </div>
+              <div class="map-row">
+                <div class="map-field"><div style="background:var(--hover);border-radius:3px;padding:3px 6px;font-size:11px">{{庫存數量}}</div></div>
+                <span class="map-arrow">←</span>
+                <div class="map-field"><select class="f-select" style="font-size:11px"><option>qty_remaining</option></select></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border);padding-top:14px">
+            <button class="btn btn-secondary" onclick="document.getElementById('trigger-form').style.display='none'">取消</button>
+            <button class="btn btn-secondary">儲存草稿</button>
+            <button class="btn btn-primary">確認並啟用</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 10.3 觸發紀錄 ════ -->
+  <div id="page-10.3" class="page" style="display:none">
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">整合中台 › 10.3</div>
+        <div class="page-title">觸發紀錄</div>
+        <div class="page-desc">查看每次觸發的詳細紀錄，包含成功、失敗、未觸發原因</div>
+      </div>
+    </div>
+
+    <!-- 篩選 -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+      <select class="f-select" style="width:160px;padding:6px 10px"><option>全部連接器</option><option>台北倉 ERP</option></select>
+      <select class="f-select" style="width:120px;padding:6px 10px"><option>全部狀態</option><option>成功</option><option>失敗</option><option>未觸發</option></select>
+      <input class="f-input" style="width:180px;padding:6px 10px" placeholder="搜尋觸發名稱..." />
+      <button class="btn btn-secondary btn-sm" style="margin-left:auto">匯出 CSV</button>
+    </div>
+
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>時間</th>
+              <th>觸發名稱</th>
+              <th>連接器</th>
+              <th>類型</th>
+              <th>條件判斷</th>
+              <th>推送對象</th>
+              <th>動作</th>
+              <th>狀態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text-muted);font-size:11px;white-space:nowrap">今天 15:02</td>
+              <td style="font-weight:500">庫存低量警報</td>
+              <td>台北倉 ERP</td>
+              <td><span class="badge badge-primary">條件觸發</span></td>
+              <td><span style="color:var(--success)">庫存數量=5，&lt;10 成立</span></td>
+              <td>A倉管群組</td>
+              <td>Bot 推播</td>
+              <td><span class="status-dot dot-success"></span><span class="badge badge-success">成功</span></td>
+              <td><button class="btn btn-secondary btn-sm" onclick="showLogDetail('success')">詳情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-muted);font-size:11px;white-space:nowrap">今天 15:10</td>
+              <td style="font-weight:500">庫存低量警報</td>
+              <td>台北倉 ERP</td>
+              <td><span class="badge badge-primary">條件觸發</span></td>
+              <td><span style="color:var(--text-muted)">庫存數量=50，&lt;10 不成立</span></td>
+              <td style="color:var(--text-muted)">—</td>
+              <td style="color:var(--text-muted)">—</td>
+              <td><span class="status-dot dot-gray"></span><span class="badge badge-gray">未觸發</span></td>
+              <td><button class="btn btn-secondary btn-sm" onclick="showLogDetail('skip')">詳情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-muted);font-size:11px;white-space:nowrap">今天 16:05</td>
+              <td style="font-weight:500">庫存低量警報</td>
+              <td>台北倉 ERP</td>
+              <td><span class="badge badge-primary">條件觸發</span></td>
+              <td><span style="color:var(--success)">庫存數量=3，&lt;10 成立</span></td>
+              <td>A倉管群組</td>
+              <td>Bot 推播</td>
+              <td><span class="status-dot dot-danger"></span><span class="badge badge-danger">失敗</span></td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm" onclick="showLogDetail('fail')">詳情</button>
+                  <button class="btn btn-primary btn-sm">重新推送</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-muted);font-size:11px;white-space:nowrap">今天 14:33</td>
+              <td style="font-weight:500">確認補貨（Postback）</td>
+              <td>台北倉 ERP</td>
+              <td><span class="badge" style="background:#FEE2E2;color:#991B1B">Postback 回寫</span></td>
+              <td><span style="color:var(--text-secondary)">員工點擊「確認補貨」</span></td>
+              <td>王小明</td>
+              <td>外部回寫</td>
+              <td><span class="status-dot dot-danger"></span><span class="badge badge-danger">失敗</span></td>
+              <td>
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm" onclick="showLogDetail('postback-fail')">詳情</button>
+                  <button class="btn btn-primary btn-sm">重新執行</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 紀錄詳情側欄（展開） -->
+    <div id="log-detail" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="log-detail-title">觸發失敗詳情</span>
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('log-detail').style.display='none'">關閉</button>
+        </div>
+        <div class="card-body" id="log-detail-body">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<style>
+@keyframes progress { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+</style>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.style.display = 'block';
+  const navItem = document.querySelector(`[onclick="showPage('${id}')"]`);
+  if (navItem) navItem.classList.add('active');
+}
+
+function showWizard() {
+  document.getElementById('wizard').style.display = 'block';
+  goWizardStep(1);
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function closeWizard() {
+  document.getElementById('wizard').style.display = 'none';
+}
+
+function goWizardStep(n) {
+  for (let i = 1; i <= 5; i++) {
+    const step = document.getElementById('wstep-' + i);
+    const ws = document.getElementById('ws' + i);
+    if (step) step.style.display = i === n ? 'block' : 'none';
+    if (ws) ws.className = 'wizard-step' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+  if (n === 2) {
+    const apiDiv = document.getElementById('step2-api');
+    const whDiv = document.getElementById('step2-webhook');
+    if (apiDiv) apiDiv.style.display = _connectorType === 'api' ? 'block' : 'none';
+    if (whDiv) whDiv.style.display = _connectorType === 'webhook' ? 'block' : 'none';
+  }
+  if (n === 3) {
+    const apiDiv = document.getElementById('step3-api');
+    const whDiv = document.getElementById('step3-webhook');
+    if (apiDiv) apiDiv.style.display = _connectorType === 'api' ? 'block' : 'none';
+    if (whDiv) whDiv.style.display = _connectorType === 'webhook' ? 'block' : 'none';
+    if (_connectorType === 'webhook') {
+      const waiting = document.getElementById('ws3-waiting');
+      const received = document.getElementById('ws3-received');
+      if (waiting) waiting.style.display = 'block';
+      if (received) received.style.display = 'none';
+    }
+  }
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+
+let _connectorType = 'api';
+
+function selectConnector(id) {
+  document.querySelectorAll('[id^="sel-"]').forEach(el => {
+    el.style.borderColor = '';
+    el.style.background = '';
+  });
+  const el = document.getElementById('sel-' + id);
+  if (el) { el.style.borderColor = 'var(--primary)'; el.style.background = 'var(--primary-soft)'; }
+  const names = {ec:'ECOUNT ERP',104:'104 HR',gw:'Google Workspace',sf:'Salesforce CRM',od:'Odoo ERP',custom:'自訂 API 連接器'};
+  const hint = document.getElementById('sel-hint');
+  if (hint) { hint.textContent = '已選擇：' + (names[id] || id); hint.style.color = 'var(--primary)'; }
+  const typeRow = document.getElementById('connector-type-row');
+  if (typeRow) typeRow.style.display = 'block';
+  selectType('api');
+}
+
+function selectType(type) {
+  _connectorType = type;
+  const apiEl = document.getElementById('type-api');
+  const whEl = document.getElementById('type-webhook');
+  if (apiEl) { apiEl.style.borderColor = type === 'api' ? 'var(--primary)' : 'var(--border)'; apiEl.style.background = type === 'api' ? 'var(--primary-soft)' : ''; }
+  if (whEl) { whEl.style.borderColor = type === 'webhook' ? 'var(--primary)' : 'var(--border)'; whEl.style.background = type === 'webhook' ? 'var(--primary-soft)' : ''; }
+  const btn = document.getElementById('ws1-next');
+  if (btn) { btn.removeAttribute('disabled'); btn.style.opacity = '1'; }
+  const ws2label = document.getElementById('ws2-label');
+  const ws3label = document.getElementById('ws3-label');
+  if (ws2label) ws2label.textContent = type === 'webhook' ? '設定接收' : '輸入憑證';
+  if (ws3label) ws3label.textContent = type === 'webhook' ? '等待測試' : '讀取欄位';
+}
+
+function toggleAuthFields() {
+  const val = document.getElementById('w-auth') ? document.getElementById('w-auth').value : 'apikey';
+  ['apikey','bearer','basic'].forEach(k => {
+    const el = document.getElementById('auth-' + k);
+    if (el) el.style.display = k === val ? 'block' : 'none';
+  });
+}
+
+function simulateWebhookReceived() {
+  const waiting = document.getElementById('ws3-waiting');
+  const received = document.getElementById('ws3-received');
+  const nextBtn = document.getElementById('ws3-wh-next');
+  if (waiting) waiting.style.display = 'none';
+  if (received) received.style.display = 'block';
+  if (nextBtn) { nextBtn.removeAttribute('disabled'); nextBtn.style.opacity = '1'; }
+}
+
+function showTriggerForm() {
+  document.getElementById('trigger-form').style.display = 'block';
+  document.getElementById('trigger-condition').style.display = 'block';
+  document.getElementById('trigger-schedule').style.display = 'none';
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function showTriggerCondition() {
+  document.getElementById('trigger-condition').style.display = 'block';
+  document.getElementById('trigger-schedule').style.display = 'none';
+  document.querySelectorAll('.radio-item').forEach((el,i) => el.classList.toggle('selected', i===0));
+}
+
+function showTriggerSchedule() {
+  document.getElementById('trigger-condition').style.display = 'none';
+  document.getElementById('trigger-schedule').style.display = 'block';
+  document.querySelectorAll('.radio-item').forEach((el,i) => el.classList.toggle('selected', i===1));
+}
+
+function switchDetailTab(id, el) {
+  document.querySelectorAll('#page-10\\.1-detail .tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#page-10\\.1-detail .tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('detail-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+function toggleActionBody(bodyId, arrId) {
+  const b = document.getElementById(bodyId);
+  const a = document.getElementById(arrId);
+  const show = b.style.display === 'none';
+  b.style.display = show ? 'block' : 'none';
+  a.textContent = show ? '▲' : '▼';
+}
+
+function toggleNewActionForm() {
+  const f = document.getElementById('new-action-form-2');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+function addParamRow() {
+  const container = document.getElementById('new-param-rows');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 80px 1fr 80px 28px;gap:6px;align-items:center;margin-bottom:5px';
+  row.innerHTML = `<input class="f-input" style="font-size:11px;background:#fff" placeholder="參數名稱" /><select class="f-select" style="font-size:11px;background:#fff"><option>String</option><option>Number</option><option>Boolean</option></select><input class="f-input" style="font-size:11px;background:#fff" placeholder="說明" /><select class="f-select" style="font-size:11px;background:#fff"><option>必填</option><option>選填</option></select><button class="btn btn-danger btn-sm btn-icon" onclick="this.parentElement.remove()">✕</button>`;
+  container.appendChild(row);
+}
+
+function showLogDetail(type) {
+  const detail = document.getElementById('log-detail');
+  const title = document.getElementById('log-detail-title');
+  const body = document.getElementById('log-detail-body');
+  detail.style.display = 'block';
+
+  const contents = {
+    success: {
+      t: '觸發成功詳情',
+      html: `<div style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:12px">
+        <span style="color:var(--text-muted)">時間</span><span>今天 15:02</span>
+        <span style="color:var(--text-muted)">觸發名稱</span><span style="font-weight:500">庫存低量警報</span>
+        <span style="color:var(--text-muted)">條件判斷</span><span style="color:var(--success)">庫存數量=5 &lt; 10，成立</span>
+        <span style="color:var(--text-muted)">推送對象</span><span>A倉管群組</span>
+        <span style="color:var(--text-muted)">LWS 回應</span><span style="color:var(--success)">HTTP 200 SUCCESS</span>
+      </div>`
+    },
+    skip: {
+      t: '未觸發詳情',
+      html: `<div class="notice notice-info">條件未達閾值，本次未推播。這是正常行為。</div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:12px">
+        <span style="color:var(--text-muted)">時間</span><span>今天 15:10</span>
+        <span style="color:var(--text-muted)">來源資料</span><span>庫存數量=50</span>
+        <span style="color:var(--text-muted)">條件</span><span>庫存數量 &lt; 10</span>
+        <span style="color:var(--text-muted)">判斷結果</span><span style="color:var(--text-muted)">不成立，略過</span>
+      </div>`
+    },
+    fail: {
+      t: '推播失敗詳情',
+      html: `<div class="notice notice-warning">LWS Bot API 回應逾時，已自動重試 3 次，全部失敗。</div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:12px;margin-bottom:14px">
+        <span style="color:var(--text-muted)">時間</span><span>今天 16:05</span>
+        <span style="color:var(--text-muted)">失敗原因</span><span style="color:var(--danger)">LWS API timeout（重試 3 次）</span>
+        <span style="color:var(--text-muted)">重試紀錄</span><span>16:05 → 16:05+5s → 16:06 → 16:08（全部逾時）</span>
+      </div>
+      <div style="display:flex;gap:6px"><button class="btn btn-primary btn-sm">手動重新推送</button></div>`
+    },
+    'postback-fail': {
+      t: 'Postback 回寫失敗詳情',
+      html: `<div class="notice notice-warning">外部 ERP 系統未在 10 秒內回應，已自動重試 3 次。</div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:12px;margin-bottom:14px">
+        <span style="color:var(--text-muted)">類型</span><span>Postback 回寫</span>
+        <span style="color:var(--text-muted)">操作者</span><span>王小明</span>
+        <span style="color:var(--text-muted)">動作</span><span>建立補貨申請（A商品，200個）</span>
+        <span style="color:var(--text-muted)">失敗原因</span><span style="color:var(--danger)">ERP API timeout（重試 3 次）</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary btn-sm">手動重新執行</button>
+        <button class="btn btn-secondary btn-sm">標記為已人工處理</button>
+      </div>`
+    }
+  };
+
+  title.textContent = contents[type].t;
+  body.innerHTML = contents[type].html;
+  window.scrollTo(0, document.body.scrollHeight);
+}
+function toggleRoutingMode(mode) {
+  const cbr = document.getElementById('cbr-rules');
+  const fixed = document.getElementById('fixed-target');
+  if (cbr) cbr.style.display = mode === 'cbr' ? 'block' : 'none';
+  if (fixed) fixed.style.display = mode === 'fixed' ? 'block' : 'none';
+  const mCBR = document.getElementById('mode-cbr');
+  const mFixed = document.getElementById('mode-fixed');
+  if (mCBR) mCBR.classList.toggle('selected', mode === 'cbr');
+  if (mFixed) mFixed.classList.toggle('selected', mode === 'fixed');
+  [mCBR, mFixed].forEach((el, i) => {
+    if (!el) return;
+    const dot = el.querySelector('.radio-dot');
+    if (dot) dot.innerHTML = (i === 0 && mode === 'cbr') || (i === 1 && mode === 'fixed') ? '<div class="radio-dot-inner"></div>' : '';
+  });
+}
+
+let cbrCount = 3;
+function addCBRRoute() {
+  cbrCount++;
+  const area = document.getElementById('cbr-new-rules');
+  if (!area) return;
+  const div = document.createElement('div');
+  div.className = 'cbr-rule';
+  div.style.cssText = 'border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:6px';
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:var(--text-muted)">規則 ${cbrCount} · 條件間：</span>
+        <div style="display:flex;gap:3px">
+          <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;background:var(--primary);color:#fff;cursor:pointer">AND</span>
+          <span style="padding:2px 7px;font-size:10px;font-weight:600;border-radius:3px;border:1px solid var(--border);color:var(--text-muted);cursor:pointer">OR</span>
+        </div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.cbr-rule').remove()">刪除規則</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 110px 1fr 28px;gap:6px;align-items:center;margin-bottom:5px">
+      <select class="f-select" style="font-size:11px"><option>選擇欄位</option><option>倉庫</option><option>庫存數量</option><option>商品名稱</option><option>employee_id</option></select>
+      <select class="f-select" style="font-size:11px"><option>= 等於</option><option>≠ 不等於</option><option>＞ 大於</option><option>＜ 小於</option><option>包含</option><option>不包含</option><option>不為空</option></select>
+      <input class="f-input" style="font-size:11px" placeholder="輸入條件值" />
+      <button class="btn btn-danger btn-sm btn-icon" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--primary);cursor:pointer;margin-bottom:8px">＋ 新增條件</div>
+    <div style="font-size:11px;font-weight:500;color:var(--text-secondary);margin-bottom:5px">則推送至</div>
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:5px;max-width:300px">
+      <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;background:var(--primary-soft);color:var(--primary);font-weight:500;cursor:pointer">固定群組</div>
+      <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">固定成員</div>
+      <div style="flex:1;padding:4px 8px;font-size:11px;text-align:center;color:var(--text-muted);cursor:pointer;border-left:1px solid var(--border)">動態成員</div>
+    </div>
+    <select class="f-select" style="font-size:11px"><option>選擇群組或成員</option></select>
+  `;
+  area.appendChild(div);
+}
+</script>
+</body>
+</html>
