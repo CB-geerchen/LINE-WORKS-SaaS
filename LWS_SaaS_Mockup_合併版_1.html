@@ -6382,7 +6382,7 @@
               <div style="padding:20px; border-right:1px solid var(--border); background:var(--bg); display:flex; flex-direction:column; align-items:center; gap:6px;">
                 <div class="card" style="width:100%; padding:10px 12px; border:2px solid var(--primary); cursor:pointer;" onclick="selectAutomationStep(this,'start')">
                   <div style="font-size:10px; color:var(--primary); font-weight:700; margin-bottom:2px;">起始條件</div>
-                  <div style="font-size:12px; font-weight:600;">成員部門異動</div>
+                  <div style="font-size:12px; font-weight:600;">按鈕點擊：上班打卡</div>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                 <div class="card" style="width:100%; padding:10px 12px; cursor:pointer;" onclick="selectAutomationStep(this,'delay')">
@@ -6392,33 +6392,14 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                 <div class="card" style="width:100%; padding:10px 12px; cursor:pointer; background:var(--primary-soft);" onclick="selectAutomationStep(this,'action')">
                   <div style="font-size:10px; color:var(--primary); font-weight:700; margin-bottom:2px;">動作</div>
-                  <div style="font-size:12px; font-weight:600;">發送訊息</div>
+                  <div style="font-size:12px; font-weight:600;">1 則結果</div>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                 <div class="card" style="width:100%; padding:10px 12px; text-align:center; color:var(--text-muted); font-size:12px;">結束</div>
               </div>
 
-              <!-- 右：選取節點的設定內容（示範：起始條件） -->
-              <div id="automation-step-panel" style="padding:20px;">
-                <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">起始條件</div>
-                <div class="form-row">
-                  <label>條件類型</label>
-                  <select class="input full">
-                    <option>加入歡迎詞</option>
-                    <option>成員加入有 Bot 所在的群組</option>
-                    <option selected>成員部門異動</option>
-                    <option>成員職位異動</option>
-                  </select>
-                  <div class="help">與「互動設計 ／ 預設訊息」共用同一批事件來源；狀態異動事件是既有成員資料寫入時順手觸發，不需額外串接。</div>
-                </div>
-                <div class="form-row" style="margin-bottom:0;">
-                  <label>監控範圍</label>
-                  <select class="input full">
-                    <option>全部部門</option>
-                    <option>指定部門</option>
-                  </select>
-                </div>
-              </div>
+              <!-- 右：選取節點的設定內容（依左側節點動態切換） -->
+              <div id="automation-step-panel" style="padding:20px;"></div>
             </div>
             <div style="padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px;">
               <button class="btn" onclick="toggleAutomationBuilder()">取消</button>
@@ -10550,16 +10531,21 @@
             <div style="font-weight:600; font-size:13px;">欄位對應</div>
             <button class="btn ghost sm">讀取外部欄位</button>
           </div>
-          <div class="help" style="margin-bottom:10px;">填好網址與 API Key 後，點擊「讀取外部欄位」，CB 會呼叫一次外部系統 API 取得可用欄位清單，供下方手動對應。</div>
-          <div style="display:grid; grid-template-columns:1fr 24px 1fr; gap:8px; align-items:center; margin-bottom:8px;">
+          <div class="help" style="margin-bottom:10px;">填好網址與 API Key 後，點擊「讀取外部欄位」，CB 會呼叫一次外部系統 API 取得可用欄位清單，供下方手動對應；「資料型別」由 IT 手動指定，系統不自動判斷。</div>
+          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center; margin-bottom:4px; font-size:10px; color:var(--text-muted); font-weight:600;">
+            <span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center; margin-bottom:8px;">
             <input class="input" style="width:100%; background:var(--hover);" value="item_code" readonly />
             <span style="text-align:center; color:var(--text-muted);">←</span>
             <select class="input" style="width:100%;"><option>外部欄位：item_no</option></select>
+            <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 24px 1fr; gap:8px; align-items:center;">
+          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center;">
             <input class="input" style="width:100%; background:var(--hover);" value="stock_qty" readonly />
             <span style="text-align:center; color:var(--text-muted);">←</span>
             <select class="input" style="width:100%;"><option>外部欄位：qty_on_hand</option></select>
+            <select class="input" style="width:100%;"><option selected>數值</option><option>文字／狀態</option><option>日期</option></select>
           </div>
         </div>
 
@@ -10581,13 +10567,13 @@
       <div class="card" style="overflow:hidden; margin-bottom:24px;">
         <table class="data-table">
           <thead>
-            <tr><th>規則名稱</th><th>連接器</th><th>觸發方式</th><th>條件</th><th>推送對象</th><th>狀態</th><th>操作</th></tr>
+            <tr><th>規則名稱</th><th>連接器</th><th>執行頻率</th><th>條件</th><th>推送對象</th><th>狀態</th><th>操作</th></tr>
           </thead>
           <tbody>
             <tr>
               <td style="font-weight:600;">庫存低量警報</td>
               <td>台北倉 ERP</td>
-              <td>條件觸發</td>
+              <td>每 5 分鐘</td>
               <td style="color:var(--text-secondary);">stock_qty &lt; 10</td>
               <td>倉管群組</td>
               <td><label class="switch"><input type="checkbox" checked /><span class="slider"></span></label></td>
@@ -10596,8 +10582,8 @@
             <tr>
               <td style="font-weight:600;">每日出勤同步</td>
               <td>人事資料（104 HR）</td>
-              <td>排程觸發</td>
-              <td style="color:var(--text-secondary);">每日 08:00</td>
+              <td>每天固定時間 08:00</td>
+              <td style="color:var(--text-secondary);">（無條件，到時間即執行）</td>
               <td>HR 管理員</td>
               <td><label class="switch"><input type="checkbox" /><span class="slider"></span></label></td>
               <td><button class="btn ghost sm">編輯</button></td>
@@ -10616,45 +10602,115 @@
         </div>
         <div class="form-row">
           <label>連接器 <span class="req">*</span></label>
-          <select class="input" style="width:100%;">
+          <select class="input" style="width:100%;" id="ih-trig-connector" onchange="ihRenderActions(this.value)">
             <option>台北倉 ERP（ECOUNT）</option>
             <option>人事資料（104 HR）</option>
             <option>倉儲派工系統（自訂）</option>
           </select>
         </div>
+        <div class="form-row">
+          <label>查詢動作 <span class="req">*</span></label>
+          <select class="input" style="width:100%;" id="ih-trig-action" onchange="ihRenderActionParamValues(this.value)"></select>
+          <div class="help">列出此連接器已定義的查詢動作；每次執行頻率到期，就是呼叫這支動作取得最新資料。找不到想要的動作？<a href="#" onclick="ihGoToActionTab(); return false;">前往動作設定新增</a></div>
+        </div>
+
+        <div class="form-row" id="ih-trig-param-values-wrap" style="display:none;">
+          <label>動作參數值</label>
+          <div class="help" style="margin-top:-4px; margin-bottom:8px;">這支動作需要的參數，填入這條規則實際要查詢的值；例如查庫存要指定查哪一個商品</div>
+          <div id="ih-trig-param-values"></div>
+          <div class="help">要同時監控多個商品／訂單？請分別建立多條規則，本階段一條規則對應一組固定的參數值</div>
+        </div>
 
         <div class="form-row">
-          <label>觸發方式</label>
-          <div style="display:flex; gap:8px;">
-            <label class="card" style="flex:1; padding:12px 14px; cursor:pointer; border:2px solid var(--primary); background:var(--primary-soft);">
-              <input type="radio" name="ih-trig-type" checked hidden />
-              <div style="font-size:13px; font-weight:600; color:var(--primary);">條件觸發</div>
-              <div style="font-size:11px; color:var(--primary); opacity:.8;">依欄位數值判斷是否推播</div>
-            </label>
-            <label class="card" style="flex:1; padding:12px 14px; cursor:pointer;">
-              <input type="radio" name="ih-trig-type" hidden />
-              <div style="font-size:13px; font-weight:600;">排程觸發</div>
-              <div style="font-size:11px; color:var(--text-muted);">固定時間執行</div>
-            </label>
+          <label>執行頻率 <span class="req">*</span></label>
+          <select class="input" style="width:100%; max-width:320px;" id="ih-freq" onchange="ihFreqRender(this.value)">
+            <option value="onupdate">每次資料更新時檢查</option>
+            <option value="5min">每 5 分鐘</option>
+            <option value="hourly">每小時</option>
+            <option value="daily">每天固定時間</option>
+            <option value="weekly">每週固定時間</option>
+          </select>
+          <div id="ih-freq-time-wrap" style="display:none; margin-top:8px;">
+            <select class="input" style="width:140px; display:inline-block;" id="ih-freq-weekday"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option></select>
+            <input class="input" style="width:120px; display:inline-block;" value="09:00" />
           </div>
-          <div class="help">Webhook 接收型觸發將於階段三開放。</div>
+          <div class="help">連接器不管有沒有條件判斷，都要依這個頻率去呼叫外部系統；Webhook 接收型觸發（不需輪詢）將於階段三開放。</div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:end;" class="form-row">
-          <div>
-            <label>欄位</label>
-            <select class="input" style="width:100%;"><option>stock_qty</option></select>
-          </div>
-          <div>
-            <label>比較符號</label>
-            <select class="input" style="width:100%;"><option>&lt;</option><option>&le;</option><option>=</option><option>&gt;</option><option>&ge;</option></select>
-          </div>
-          <div>
-            <label>數值</label>
-            <input class="input" style="width:100%;" value="10" />
-          </div>
+        <div class="form-row">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="ih-cond-toggle" onchange="ihCondToggle(this.checked)" style="width:16px; height:16px;" />
+            加上條件判斷（選填）
+          </label>
+          <div class="help">不勾選：每次到執行頻率就直接觸發下方動作。勾選：每次到執行頻率，先檢查條件是否成立，成立才觸發動作。</div>
         </div>
-        <div class="help" style="margin-top:-8px; margin-bottom:16px;">僅支援單一條件；輪詢頻率可選「每次資料更新時檢查／每 5 分鐘／每小時」。</div>
+
+        <div id="ih-cond-builder" style="display:none;">
+          <div class="form-row">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:end;">
+              <div>
+                <label>欄位</label>
+                <select class="input" style="width:100%;" id="ih-cond-field" onchange="ihCondRender(this.value)">
+                  <option value="number">stock_qty（數值）</option>
+                  <option value="text">order_status（文字／狀態）</option>
+                  <option value="date">contract_end_date（日期）</option>
+                </select>
+                <div class="help">欄位型別於連接器「欄位對應」階段由 IT 手動指定，不自動判斷・<a href="#" onclick="ihGoToMapping(); return false;">前往欄位對應設定</a></div>
+              </div>
+              <div>
+                <label>比較符號</label>
+                <select class="input" style="width:100%;" id="ih-cond-op"></select>
+              </div>
+              <div id="ih-cond-value-wrap">
+                <label>數值</label>
+                <input class="input" style="width:100%;" id="ih-cond-value" value="10" />
+              </div>
+            </div>
+            <div class="help" id="ih-cond-help" style="margin-top:6px;"></div>
+          </div>
+          <div class="help" style="margin-top:-8px; margin-bottom:16px;">僅支援單一條件。連線失敗或欄位型別不符時，觸發紀錄記為「失敗」，不列入條件判斷。</div>
+        </div>
+
+        <script>
+          function ihFreqRender(key) {
+            document.getElementById('ih-freq-time-wrap').style.display = (key === 'daily' || key === 'weekly') ? 'block' : 'none';
+            var weekdaySel = document.getElementById('ih-freq-weekday');
+            weekdaySel.style.display = (key === 'weekly') ? 'inline-block' : 'none';
+          }
+          function ihCondToggle(checked) {
+            document.getElementById('ih-cond-builder').style.display = checked ? '' : 'none';
+          }
+
+          var IH_COND_CONFIGS = {
+            number: {
+              ops: ['<', '≤', '=', '>', '≥', '有值', '為空'],
+              value: function(){ return '<input class="input" style="width:100%;" id="ih-cond-value" value="10" />'; },
+              label: '數值',
+              help: '數值型：比較前一律四捨五入到小數點後 2 位，避免小數運算誤差導致「等於」誤判。'
+            },
+            text: {
+              ops: ['等於', '不等於', '有值', '為空'],
+              value: function(){ return '<input class="input" style="width:100%;" id="ih-cond-value" placeholder="手動輸入比對字串" value="已取消" />'; },
+              label: '值',
+              help: '文字／狀態型：不分大小寫、自動去除前後空白再比對。本階段不支援包含、模糊比對、多值比對（清單中任一個）。'
+            },
+            date: {
+              ops: ['距今超過 N 天', '未來 N 天內', '有值', '為空'],
+              value: function(){ return '<input class="input" style="width:100%;" id="ih-cond-value" value="30" placeholder="天數" />'; },
+              label: 'N 天',
+              help: '日期型：一律使用台灣時間（UTC+8）計算天數邊界，不開放各連接器自訂時區。'
+            }
+          };
+          function ihCondRender(key) {
+            var c = IH_COND_CONFIGS[key];
+            var opSel = document.getElementById('ih-cond-op');
+            opSel.innerHTML = c.ops.map(function(o){ return '<option>'+o+'</option>'; }).join('');
+            var wrap = document.getElementById('ih-cond-value-wrap');
+            wrap.innerHTML = '<label>'+c.label+'</label>' + c.value();
+            document.getElementById('ih-cond-help').textContent = c.help;
+          }
+          document.getElementById('ih-cond-op') && ihCondRender('number');
+        </script>
 
         <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:16px;">
           <div class="form-row">
@@ -10758,23 +10814,49 @@
       </div>
     </div>
 
-    <div id="ih-d-mapping" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:640px;">
+    <div id="ih-d-mapping" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:720px;">
       <div class="card" style="padding:20px 24px;">
-        <div style="font-weight:600; font-size:13px; margin-bottom:12px;">外部欄位 ↔ CB 標準欄位</div>
-        <div style="display:grid; grid-template-columns:1fr 24px 1fr 32px; gap:8px; align-items:center; margin-bottom:8px;">
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">外部欄位 ↔ CB 標準欄位</div>
+        <div class="help" style="margin-bottom:12px;">「資料型別」由 IT 手動指定，系統不自動判斷；選「日期」需另選日期格式，供條件觸發解析用</div>
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:4px; font-size:10px; color:var(--text-muted); font-weight:600;">
+          <span></span><span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span></span>
+        </div>
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:8px;">
+          <span style="font-size:14px;">📦</span>
           <input class="input" style="width:100%; background:var(--hover);" value="item_code" readonly />
           <span style="text-align:center; color:var(--text-muted);">←</span>
           <input class="input" style="width:100%;" value="item_no" />
+          <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
           <button class="btn ghost sm">✕</button>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 24px 1fr 32px; gap:8px; align-items:center;">
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:8px;">
+          <span style="font-size:14px;">🔢</span>
           <input class="input" style="width:100%; background:var(--hover);" value="stock_qty" readonly />
           <span style="text-align:center; color:var(--text-muted);">←</span>
           <input class="input" style="width:100%;" value="qty_on_hand" />
+          <select class="input" style="width:100%;"><option selected>數值</option><option>文字／狀態</option><option>日期</option></select>
           <button class="btn ghost sm">✕</button>
+        </div>
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center;">
+          <span style="font-size:14px;">📅</span>
+          <input class="input" style="width:100%; background:var(--hover);" value="contract_end_date" readonly />
+          <span style="text-align:center; color:var(--text-muted);">←</span>
+          <input class="input" style="width:100%;" value="contract_expiry" />
+          <select class="input" style="width:100%;" onchange="ihMapToggleDateFormat(this)"><option>文字／狀態</option><option>數值</option><option selected>日期</option></select>
+          <button class="btn ghost sm">✕</button>
+        </div>
+        <div id="ih-map-date-format" style="margin-top:8px; padding:10px 12px; background:var(--hover); border-radius:var(--radius-sm); display:flex; align-items:center; gap:10px;">
+          <label style="font-size:11px; font-weight:600; margin:0;">contract_end_date 的日期格式</label>
+          <select class="input" style="width:200px;"><option>ISO 8601</option><option>YYYY-MM-DD</option><option>YYYY/MM/DD</option><option>Unix Timestamp</option></select>
         </div>
         <button class="btn ghost sm" style="margin-top:10px;">＋ 新增對應</button>
       </div>
+      <script>
+        function ihMapToggleDateFormat(sel) {
+          var box = document.getElementById('ih-map-date-format');
+          if (box) box.style.display = (sel.value === '日期') ? 'flex' : 'none';
+        }
+      </script>
     </div>
 
     <div id="ih-d-action" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:640px;">
@@ -10787,12 +10869,87 @@
               <span style="font-size:13px; font-weight:600;">查詢庫存數量</span>
               <code style="font-size:11px; color:var(--text-muted);">get_stock</code>
             </div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">/items/{item_code}/stock</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">/warehouses/{warehouse_id}/items/{item_code}/stock</div>
           </div>
           <span class="badge success">使用中</span>
         </div>
       </div>
-      <button class="btn ghost sm" style="margin-top:10px;">＋ 新增查詢動作</button>
+      <button class="btn ghost sm" style="margin-top:10px;" onclick="ihToggleNewAction()">＋ 新增查詢動作</button>
+
+      <div id="ih-new-action-form" class="card" style="display:none; padding:20px 24px; margin-top:10px;">
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">新增查詢動作</div>
+        <div class="help" style="margin-bottom:14px;">定義一支具體的 API 呼叫：什麼方法、什麼路徑、需要哪些參數。這支動作之後可以在「觸發引擎」的查詢動作下拉、或（階段二起）Bot 按鈕的「呼叫連接器」裡被選用。</div>
+
+        <div class="form-row">
+          <label>動作名稱 <span class="req">*</span></label>
+          <input class="input" style="width:100%;" placeholder="例如：查詢訂單狀態" />
+        </div>
+        <div style="display:grid; grid-template-columns:100px 1fr; gap:16px;">
+          <div class="form-row">
+            <label>HTTP 方法</label>
+            <input class="input" style="width:100%; background:var(--hover); color:var(--text-muted);" value="GET" disabled />
+            <div class="help">POST／PATCH 階段二開放</div>
+          </div>
+          <div class="form-row">
+            <label>API 路徑 <span class="req">*</span></label>
+            <input class="input" style="width:100%;" placeholder="/orders/{order_id}/status" />
+            <div class="help">相對於連接器的 API 基礎網址；路徑中可用 <code>{參數名稱}</code> 代表帶入的參數</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>識別碼</label>
+          <input class="input" style="width:100%; max-width:280px;" placeholder="get_order_status" />
+          <div class="help">系統內部引用用，員工不會看到；建議英文小寫加底線</div>
+        </div>
+
+        <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
+          <div style="font-weight:600; font-size:12px; margin-bottom:2px;">參數（Request・呼叫這支 API 前，你要先給它什麼）</div>
+          <div class="help" style="margin-bottom:8px;">呼叫這支 API 時要帶入的條件，例如「查哪一筆」</div>
+          <div id="ih-action-params">
+            <div style="display:grid; grid-template-columns:1fr 100px 1fr 70px 32px; gap:8px; align-items:center; margin-bottom:6px; font-size:10px; color:var(--text-muted); font-weight:600;">
+              <span>參數名稱</span><span>型別</span><span>說明</span><span>必填</span><span></span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 100px 1fr 70px 32px; gap:8px; align-items:center;">
+              <input class="input" style="width:100%;" value="order_id" />
+              <select class="input" style="width:100%;"><option>文字</option><option>數值</option></select>
+              <input class="input" style="width:100%;" value="訂單編號" />
+              <input type="checkbox" checked style="width:16px; height:16px;" />
+              <button class="btn ghost sm">✕</button>
+            </div>
+          </div>
+          <button class="btn ghost sm" style="margin-top:8px;" onclick="ihAddActionParam()">＋ 新增參數</button>
+        </div>
+
+        <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
+          <div style="font-weight:600; font-size:12px; margin-bottom:2px;">這支動作回傳的欄位（Response・API 執行完會還給你什麼）</div>
+          <div class="help" style="margin-bottom:8px;">在這裡宣告的欄位，存檔後會自動加進本連接器共用的「欄位對應」清單，不用再跳去別的分頁重複設定；如果欄位跟其他動作重複（例如都會回傳 item_code），系統會沿用既有的對應，不會重複新增。</div>
+          <div id="ih-action-response-fields">
+            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px; font-size:10px; color:var(--text-muted); font-weight:600;">
+              <span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span></span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
+              <input class="input" style="width:100%;" placeholder="order_status" />
+              <span style="text-align:center; color:var(--text-muted);">←</span>
+              <input class="input" style="width:100%;" placeholder="status" />
+              <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
+              <button class="btn ghost sm">✕</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center;">
+              <input class="input" style="width:100%;" placeholder="order_date" />
+              <span style="text-align:center; color:var(--text-muted);">←</span>
+              <input class="input" style="width:100%;" placeholder="created_at" />
+              <select class="input" style="width:100%;"><option>日期</option><option>文字／狀態</option><option>數值</option></select>
+              <button class="btn ghost sm">✕</button>
+            </div>
+          </div>
+          <button class="btn ghost sm" style="margin-top:8px;" onclick="ihAddActionResponseField()">＋ 新增回傳欄位</button>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+          <button class="btn" onclick="ihToggleNewAction()">取消</button>
+          <button class="btn primary" onclick="ihToggleNewAction()">儲存動作（同步更新欄位對應）</button>
+        </div>
+      </div>
     </div>
 
     <div id="ih-d-test" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:640px;">
@@ -19268,7 +19425,11 @@ function orgLangAccToggle() {
 
   function toggleAutomationBuilder() {
     var el = document.getElementById('automation-builder');
-    if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? '' : 'none';
+    if (el) {
+      var opening = (el.style.display === 'none' || !el.style.display);
+      el.style.display = opening ? '' : 'none';
+      if (opening) autoRenderStart();
+    }
   }
 
   function selectAutomationStep(el, step) {
@@ -19278,6 +19439,182 @@ function orgLangAccToggle() {
     });
     el.style.border = '2px solid var(--primary)';
     el.style.background = 'var(--primary-soft)';
+    if (step === 'start') autoRenderStart();
+    if (step === 'delay') autoRenderDelay();
+    if (step === 'action') autoRenderAction();
+  }
+
+  /* ===== 起始條件面板 ===== */
+  var AUTO_MENUS = {
+    checkin: [ { name: '主選單', type: '圖文選單', buttons: [
+        { label: '上班打卡', action: '發送訊息' }, { label: '我要請假', action: '啟動連結' },
+        { label: '下班打卡', action: '發送訊息' }
+      ] } ],
+    cs: [ { name: '客服分流', type: '快速選單', buttons: [
+        { label: '訂單查詢', action: '發送訊息' }, { label: '退貨申請', action: '發送訊息' }, { label: '真人客服', action: '關鍵字' }
+      ] } ]
+  };
+  var AUTO_CARDS = {
+    cs: [ { name: '庫存低量警報卡', buttons: [ { label: '確認補貨', action: '呼叫連接器' }, { label: '查看庫存明細', action: '啟動連結' } ] } ],
+    checkin: [ { name: '打卡設定完成卡', buttons: [ { label: '開啟上班打卡', action: '啟動連結' }, { label: '查看打卡規則', action: '發送訊息' } ] } ]
+  };
+  var AUTO_KEYWORDS = {
+    cs: [ { label: '營業時間', count: 342 }, { label: '真人客服', count: 56 } ],
+    checkin: [ { label: '我要打卡', count: 210 }, { label: '補打卡', count: 34 } ]
+  };
+
+  function autoRenderStart() {
+    var panel = document.getElementById('automation-step-panel');
+    panel.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">起始條件</div>' +
+      '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;" id="auto-cat-tabs">' +
+        '<button class="auto-cat active" onclick="autoCatSelect(this,\'button\')" style="padding:6px 12px;border-radius:7px;border:1.5px solid var(--primary);background:var(--primary-soft);color:var(--primary);font-size:11px;font-weight:600;cursor:pointer;">按鈕點擊</button>' +
+        '<button class="auto-cat" onclick="autoCatSelect(this,\'keyword\')" style="padding:6px 12px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:11px;font-weight:500;cursor:pointer;">關鍵字</button>' +
+        '<button class="auto-cat" onclick="autoCatSelect(this,\'directory\')" style="padding:6px 12px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:11px;font-weight:500;cursor:pointer;">成員／組織異動</button>' +
+        '<button class="auto-cat" onclick="autoCatSelect(this,\'room\')" style="padding:6px 12px;border-radius:7px;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:11px;font-weight:500;cursor:pointer;">聊天室成員異動</button>' +
+      '</div>' +
+      '<div id="auto-cat-panel"></div>';
+    autoCatSelect(panel.querySelector('.auto-cat'), 'button');
+  }
+
+  function autoButtonGrid(items) {
+    var html = '';
+    items.forEach(function(group){
+      html += '<div style="margin-bottom:12px;"><div style="font-size:11px; font-weight:600; margin-bottom:5px; display:flex; align-items:center; gap:5px;">' + group.name + (group.type?'<span class="type-chip" style="font-size:9px;">'+group.type+'</span>':'') + '</div>' +
+        '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+        group.buttons.map(function(b,i){ return '<button style="padding:6px 10px; border-radius:7px; border:1.5px solid ' + (i===0?'var(--primary)':'var(--border-strong)') + '; background:' + (i===0?'#fff':'var(--surface)') + '; font-size:11px; cursor:pointer; text-align:left;"><div style="font-weight:600;">'+b.label+'</div><div style="font-size:9px; color:var(--text-muted);">'+b.action+'</div></button>'; }).join('') +
+        '</div></div>';
+    });
+    return html;
+  }
+
+  function autoCatSelect(el, key) {
+    document.querySelectorAll('#auto-cat-tabs .auto-cat').forEach(function(b){
+      b.classList.remove('active'); b.style.border = '1.5px solid var(--border-strong)'; b.style.background = 'var(--surface)'; b.style.color = 'var(--text)'; b.style.fontWeight = '500';
+    });
+    el.classList.add('active'); el.style.border = '1.5px solid var(--primary)'; el.style.background = 'var(--primary-soft)'; el.style.color = 'var(--primary)'; el.style.fontWeight = '600';
+    var out = document.getElementById('auto-cat-panel');
+    if (key === 'button') {
+      out.innerHTML =
+        '<div class="form-row"><label>選擇 Bot</label><select class="input full" id="auto-btn-bot" onchange="autoRenderButtonSource(document.querySelector(\'.auto-src.active\').getAttribute(\'data-src\'), this.value)"><option value="checkin">打卡 Bot 範本</option><option value="cs">客服助手</option></select></div>' +
+        '<div class="form-row"><label>按鈕來源</label><div style="display:flex; gap:6px;">' +
+          '<button class="auto-src active" data-src="menu" onclick="autoSrcSelect(this,\'menu\')" style="padding:6px 11px;border-radius:99px;border:1.5px solid var(--primary);background:var(--primary-soft);color:var(--primary);font-size:11px;font-weight:600;cursor:pointer;">來自選單</button>' +
+          '<button class="auto-src" data-src="card" onclick="autoSrcSelect(this,\'card\')" style="padding:6px 11px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:11px;font-weight:500;cursor:pointer;">來自訊息卡片</button>' +
+        '</div></div>' +
+        '<div id="auto-btn-src-list"></div>' +
+        '<div class="help">假設按鈕「啟動連結」的轉址追蹤已開發完成，所有按鈕皆可選用</div>';
+      autoRenderButtonSource('menu', 'checkin');
+    } else if (key === 'keyword') {
+      out.innerHTML = '<div class="form-row"><label>選擇 Bot</label><select class="input full" onchange="autoRenderKeyword(this.value)"><option value="checkin">打卡 Bot 範本</option><option value="cs">客服助手</option></select></div><div id="auto-kw-list"></div>';
+      autoRenderKeyword('checkin');
+    } else if (key === 'directory') {
+      out.innerHTML = '<div style="display:flex; flex-direction:column; gap:6px;">' +
+        '<button class="card" style="text-align:left; padding:9px 12px; border:1.5px solid var(--primary); background:var(--primary-soft);"><div style="font-size:12px; font-weight:600; color:var(--primary);">成員部門異動</div></button>' +
+        '<button class="card" style="text-align:left; padding:9px 12px;"><div style="font-size:12px; font-weight:600;">成員職位異動</div></button>' +
+        '<button class="card" style="text-align:left; padding:9px 12px;"><div style="font-size:12px; font-weight:600;">新增／啟用成員</div></button>' +
+      '</div>';
+    } else {
+      out.innerHTML = '<div style="display:flex; flex-direction:column; gap:6px;">' +
+        '<button class="card" style="text-align:left; padding:9px 12px; border:1.5px solid var(--primary); background:var(--primary-soft);"><div style="font-size:12px; font-weight:600; color:var(--primary);">成員加入有 Bot 的群組</div></button>' +
+        '<button class="card" style="text-align:left; padding:9px 12px;"><div style="font-size:12px; font-weight:600;">成員移出有 Bot 的群組</div></button>' +
+      '</div>';
+    }
+  }
+
+  function autoSrcSelect(el, key) {
+    document.querySelectorAll('.auto-src').forEach(function(b){ b.classList.remove('active'); b.style.border='1.5px solid var(--border-strong)'; b.style.background='var(--surface)'; b.style.color='var(--text)'; b.style.fontWeight='500'; });
+    el.classList.add('active'); el.style.border='1.5px solid var(--primary)'; el.style.background='var(--primary-soft)'; el.style.color='var(--primary)'; el.style.fontWeight='600';
+    var botKey = document.getElementById('auto-btn-bot').value;
+    autoRenderButtonSource(key, botKey);
+  }
+
+  function autoRenderButtonSource(srcKey, botKey) {
+    var wrap = document.getElementById('auto-btn-src-list');
+    if (!wrap) return;
+    wrap.innerHTML = autoButtonGrid(srcKey === 'menu' ? AUTO_MENUS[botKey] : AUTO_CARDS[botKey]);
+  }
+
+  function autoRenderKeyword(botKey) {
+    var items = AUTO_KEYWORDS[botKey];
+    document.getElementById('auto-kw-list').innerHTML = '<div style="display:flex; gap:6px; flex-wrap:wrap;">' +
+      items.map(function(k,i){ return '<button style="padding:7px 11px; border-radius:7px; border:1.5px solid ' + (i===0?'var(--primary)':'var(--border-strong)') + '; background:' + (i===0?'#fff':'var(--surface)') + '; font-size:11px;"><div style="font-weight:600;">'+k.label+'</div><div style="font-size:9px; color:var(--text-muted);">觸發 '+k.count+' 次</div></button>'; }).join('') + '</div>';
+  }
+
+  /* ===== 延遲面板 ===== */
+  function autoRenderDelay() {
+    var panel = document.getElementById('automation-step-panel');
+    panel.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">延遲</div>' +
+      '<div class="form-row"><label>延遲時間</label>' +
+      '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;" id="auto-delay-chips">' +
+        ['立即','10 分鐘後','1 天後','7 天後','自訂…'].map(function(t,i){
+          return '<button class="auto-delay-chip'+(i===0?' active':'')+'" onclick="autoDelaySelect(this,'+i+')" style="padding:7px 12px;border-radius:7px;border:1.5px solid '+(i===0?'var(--primary)':'var(--border-strong)')+';background:'+(i===0?'var(--primary-soft)':'var(--surface)')+';color:'+(i===0?'var(--primary)':'var(--text)')+';font-size:11px;font-weight:'+(i===0?'600':'500')+';cursor:pointer;">'+t+'</button>';
+        }).join('') +
+      '</div>' +
+      '<div id="auto-delay-custom" style="display:none; gap:6px; align-items:center; margin-bottom:8px;"><input class="input" style="width:80px;" value="30" /><select class="input" style="width:100px;"><option>分鐘後</option><option>小時後</option><option>天後</option></select></div>' +
+      '<div class="help">快選與自訂輸入是同一欄位，底層皆為「立即／N 分鐘／N 小時／N 天後」</div></div>' +
+      '<div class="notice notice-info" style="margin-top:10px;"><strong>不做「僅在…才執行」附加條件：</strong>每種起始事件的「完成」定義都不同，需各自開發判定邏輯。延遲時間到即執行，之後有具體案例再個別開發。</div>';
+  }
+
+  function autoDelaySelect(el, idx) {
+    document.querySelectorAll('.auto-delay-chip').forEach(function(b){ b.classList.remove('active'); b.style.border='1.5px solid var(--border-strong)'; b.style.background='var(--surface)'; b.style.color='var(--text)'; b.style.fontWeight='500'; });
+    el.classList.add('active'); el.style.border='1.5px solid var(--primary)'; el.style.background='var(--primary-soft)'; el.style.color='var(--primary)'; el.style.fontWeight='600';
+    document.getElementById('auto-delay-custom').style.display = (idx === 4) ? 'flex' : 'none';
+  }
+
+  /* ===== 動作面板 ===== */
+  var AUTO_MSG_TEMPLATES = ['打卡設定失敗通知','打卡提醒卡','庫存低量警報卡','新人歡迎卡','試用期考核提醒','一般通知'];
+  var autoResultCount = 0;
+
+  function autoRenderAction() {
+    var panel = document.getElementById('automation-step-panel');
+    panel.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">動作（可新增多個結果，同時觸發）</div>' +
+      '<div id="auto-result-list"></div>' +
+      '<button class="btn ghost sm" onclick="autoAddResult()">＋ 新增結果</button>';
+    autoResultCount = 0;
+    document.getElementById('auto-result-list').innerHTML = '';
+    autoAddResult();
+  }
+
+  function autoResultBlock(id, type) {
+    var cards = [
+      { key:'text', icon:'✉', title:'文字訊息' },
+      { key:'card', icon:'▧', title:'圖片／訊息卡' },
+      { key:'notify', icon:'◷', title:'通知人員' }
+    ];
+    var cardsHtml = cards.map(function(c){
+      var active = c.key === type;
+      return '<button onclick="autoSetResultType('+id+',\''+c.key+'\')" style="flex:1; padding:8px; border-radius:7px; border:1.5px solid '+(active?'var(--primary)':'var(--border-strong)')+'; background:'+(active?'var(--primary-soft)':'var(--surface)')+'; text-align:left; cursor:pointer;">' +
+        '<div style="font-size:13px;">'+c.icon+'</div><div style="font-size:11px; font-weight:600; color:'+(active?'var(--primary)':'var(--text)')+';">'+c.title+'</div></button>';
+    }).join('');
+    var detail;
+    if (type === 'notify') {
+      detail = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">' +
+        '<div><label style="display:block; font-size:10px; font-weight:600; margin-bottom:4px;">通知對象</label><select class="input full"><option>起始事件本人</option><option>本人的直屬主管 ⚠ 待確認</option><option>打卡管理者群組</option></select></div>' +
+        '<div><label style="display:block; font-size:10px; font-weight:600; margin-bottom:4px;">通知內容</label><select class="input full">' + AUTO_MSG_TEMPLATES.map(function(m){return '<option>'+m+'</option>';}).join('') + '</select></div></div>';
+    } else {
+      detail = '<div style="margin-top:10px;"><label style="display:block; font-size:10px; font-weight:600; margin-bottom:4px;">選擇內容（來自 5.5 預設訊息）</label>' +
+        '<select class="input full">' + AUTO_MSG_TEMPLATES.map(function(m){return '<option>'+m+'</option>';}).join('') + '</select></div>';
+    }
+    return '<div class="result-block" id="auto-result-'+id+'" style="border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; margin-bottom:8px;">' +
+      '<div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-size:10px; font-weight:700; color:var(--text-muted);">結果 '+(id+1)+'</span>' + (id>0?'<button class="btn ghost sm" onclick="autoRemoveResult('+id+')">刪除</button>':'') + '</div>' +
+      '<div style="display:flex; gap:6px;">' + cardsHtml + '</div>' + detail + '</div>';
+  }
+
+  function autoSetResultType(id, type) {
+    document.getElementById('auto-result-'+id).outerHTML = autoResultBlock(id, type);
+  }
+  function autoAddResult() {
+    var wrap = document.getElementById('auto-result-list');
+    var div = document.createElement('div');
+    div.innerHTML = autoResultBlock(autoResultCount, autoResultCount === 0 ? 'text' : 'notify');
+    wrap.appendChild(div.firstChild);
+    autoResultCount++;
+  }
+  function autoRemoveResult(id) {
+    var el = document.getElementById('auto-result-'+id);
+    if (el) el.remove();
   }
 
   function switchBotSubTab(btn, paneId) {
@@ -23012,6 +23349,55 @@ function abv2PickSeg(el){
     document.querySelectorAll('.ih-tab-pane').forEach(function(p){ p.style.display = 'none'; });
     document.getElementById(paneId).style.display = '';
   }
+  var IH_CONNECTOR_ACTIONS = {
+    '台北倉 ERP（ECOUNT）': [ { label: '查詢庫存數量', key: 'get_stock', params: [ { name: 'warehouse_id', label: '倉庫代號', placeholder: '例如：TP01' }, { name: 'item_code', label: '商品編號', placeholder: '例如：A001' } ] } ],
+    '人事資料（104 HR）': [ { label: '查詢在職狀態', key: 'get_employment_status', params: [ { name: 'emp_id', label: '員工編號', placeholder: '例如：E1023' } ] } ],
+    '倉儲派工系統（自訂）': [ { label: '查詢派工狀態', key: 'get_dispatch_status', params: [ { name: 'dispatch_id', label: '派工單號', placeholder: '例如：D20260601' } ] } ]
+  };
+  function ihRenderActions(connectorName) {
+    var sel = document.getElementById('ih-trig-action');
+    var actions = IH_CONNECTOR_ACTIONS[connectorName] || [];
+    sel.innerHTML = actions.map(function(a){ return '<option>'+a.label+'（'+a.key+'）</option>'; }).join('')
+      || '<option disabled selected>此連接器尚未定義任何查詢動作</option>';
+    ihRenderActionParamValues(sel.value);
+  }
+  function ihRenderActionParamValues(actionOptionText) {
+    var wrap = document.getElementById('ih-trig-param-values-wrap');
+    var target = document.getElementById('ih-trig-param-values');
+    var connectorSel = document.getElementById('ih-trig-connector');
+    var actions = IH_CONNECTOR_ACTIONS[connectorSel.value] || [];
+    var action = actions.filter(function(a){ return actionOptionText && actionOptionText.indexOf(a.label) === 0; })[0];
+    if (!action || !action.params || !action.params.length) {
+      wrap.style.display = 'none';
+      target.innerHTML = '';
+      return;
+    }
+    wrap.style.display = '';
+    target.innerHTML = action.params.map(function(p){
+      return '<div style="display:grid; grid-template-columns:160px 1fr; gap:8px; align-items:center; margin-bottom:6px;">' +
+        '<label style="font-size:12px; font-weight:500; margin:0;">' + p.label + ' <code style="font-size:10px; color:var(--text-muted);">(' + p.name + ')</code></label>' +
+        '<input class="input" style="width:100%;" placeholder="' + p.placeholder + '" />' +
+      '</div>';
+    }).join('');
+  }
+  function ihGoToActionTab() {
+    var sel = document.getElementById('ih-trig-connector');
+    var nameToId = { '台北倉 ERP（ECOUNT）': 'ecount', '人事資料（104 HR）': 'hr104', '倉儲派工系統（自訂）': 'custom1' };
+    var id = (sel && nameToId[sel.value]) || 'ecount';
+    ihOpenDetail(id);
+    var actionBtn = document.querySelector('#ih-detail-view .tabs .tab:nth-child(3)');
+    if (actionBtn) ihSwitchDetailTab(actionBtn, 'ih-d-action');
+  }
+
+  function ihGoToMapping() {
+    var sel = document.getElementById('ih-trig-connector');
+    var nameToId = { '台北倉 ERP（ECOUNT）': 'ecount', '人事資料（104 HR）': 'hr104', '倉儲派工系統（自訂）': 'custom1' };
+    var id = (sel && nameToId[sel.value]) || 'ecount';
+    ihOpenDetail(id);
+    var mappingBtn = document.querySelector('#ih-detail-view .tabs .tab:nth-child(2)');
+    if (mappingBtn) ihSwitchDetailTab(mappingBtn, 'ih-d-mapping');
+  }
+
   function ihOpenDetail(id) {
     document.getElementById('ih-list-view').style.display = 'none';
     document.getElementById('ih-detail-view').style.display = '';
@@ -23032,6 +23418,36 @@ function abv2PickSeg(el){
     document.getElementById('ih-new-name').value = name.indexOf('自訂') === 0 ? '' : name;
     document.getElementById('ih-new-connector').scrollIntoView({behavior:'smooth'});
   }
+  function ihToggleNewAction() {
+    var el = document.getElementById('ih-new-action-form');
+    if (el) el.style.display = (el.style.display === 'none' || !el.style.display) ? '' : 'none';
+  }
+  function ihAddActionParam() {
+    var wrap = document.getElementById('ih-action-params');
+    var row = document.createElement('div');
+    row.style.cssText = 'display:grid; grid-template-columns:1fr 100px 1fr 70px 32px; gap:8px; align-items:center; margin-top:6px;';
+    row.innerHTML =
+      '<input class="input" style="width:100%;" placeholder="參數名稱" />' +
+      '<select class="input" style="width:100%;"><option>文字</option><option>數值</option></select>' +
+      '<input class="input" style="width:100%;" placeholder="說明" />' +
+      '<input type="checkbox" style="width:16px; height:16px;" />' +
+      '<button class="btn ghost sm" onclick="this.parentElement.remove()">✕</button>';
+    wrap.appendChild(row);
+  }
+  function ihAddActionResponseField() {
+    var wrap = document.getElementById('ih-action-response-fields');
+    var row = document.createElement('div');
+    row.style.cssText = 'display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-top:6px;';
+    row.innerHTML =
+      '<input class="input" style="width:100%;" placeholder="CB 標準欄位" />' +
+      '<span style="text-align:center; color:var(--text-muted);">←</span>' +
+      '<input class="input" style="width:100%;" placeholder="外部欄位" />' +
+      '<select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>' +
+      '<button class="btn ghost sm" onclick="this.parentElement.remove()">✕</button>';
+    wrap.appendChild(row);
+  }
+
+  document.getElementById('ih-trig-connector') && ihRenderActions(document.getElementById('ih-trig-connector').value);
 
 </script>
 </body>
