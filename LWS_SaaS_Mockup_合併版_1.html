@@ -10502,54 +10502,15 @@
             <div class="help">Bearer Token／Basic Auth／OAuth 2.0 目前未開放</div>
           </div>
         </div>
-        <div class="form-row">
+        <div class="form-row" style="margin-bottom:0;">
           <label>API Key <span class="req">*</span></label>
           <input class="input" style="width:100%;" type="password" placeholder="貼上外部系統提供的 API Key" />
-          <div class="help">將以 AES-256 加密儲存，畫面僅顯示末 4 碼。</div>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-          <div class="form-row" style="margin-bottom:0;">
-            <label>請求逾時</label>
-            <select class="input" style="width:100%;">
-              <option>10 秒（預設）</option>
-              <option>15 秒</option>
-              <option>30 秒</option>
-            </select>
-          </div>
-          <div class="form-row" style="margin-bottom:0;">
-            <label>重試次數</label>
-            <select class="input" style="width:100%;">
-              <option>3 次（預設）</option>
-              <option>1 次</option>
-              <option>5 次</option>
-            </select>
-          </div>
+          <div class="help">將以 AES-256 加密儲存，畫面僅顯示末 4 碼。請求逾時與重試次數由系統統一設定，不開放自訂。</div>
         </div>
 
-        <div style="border-top:1px solid var(--border); margin:20px 0; padding-top:16px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-            <div style="font-weight:600; font-size:13px;">欄位對應</div>
-            <button class="btn ghost sm">讀取外部欄位</button>
-          </div>
-          <div class="help" style="margin-bottom:10px;">填好網址與 API Key 後，點擊「讀取外部欄位」，CB 會呼叫一次外部系統 API 取得可用欄位清單，供下方手動對應；「資料型別」由 IT 手動指定，系統不自動判斷。</div>
-          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center; margin-bottom:4px; font-size:10px; color:var(--text-muted); font-weight:600;">
-            <span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center; margin-bottom:8px;">
-            <input class="input" style="width:100%; background:var(--hover);" value="item_code" readonly />
-            <span style="text-align:center; color:var(--text-muted);">←</span>
-            <select class="input" style="width:100%;"><option>外部欄位：item_no</option></select>
-            <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px; gap:8px; align-items:center;">
-            <input class="input" style="width:100%; background:var(--hover);" value="stock_qty" readonly />
-            <span style="text-align:center; color:var(--text-muted);">←</span>
-            <select class="input" style="width:100%;"><option>外部欄位：qty_on_hand</option></select>
-            <select class="input" style="width:100%;"><option selected>數值</option><option>文字／狀態</option><option>日期</option></select>
-          </div>
-        </div>
+        <div class="help" style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">連接器儲存後，請至「動作設定」新增查詢動作；欄位對應將依各動作的回傳欄位自動彙整，可於連接器詳情的「欄位對應」頁籤檢視。</div>
 
-        <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
           <button class="btn">取消</button>
           <button class="btn primary">儲存連接器</button>
         </div>
@@ -10624,7 +10585,6 @@
         <div class="form-row">
           <label>執行頻率 <span class="req">*</span></label>
           <select class="input" style="width:100%; max-width:320px;" id="ih-freq" onchange="ihFreqRender(this.value)">
-            <option value="onupdate">每次資料更新時檢查</option>
             <option value="5min">每 5 分鐘</option>
             <option value="hourly">每小時</option>
             <option value="daily">每天固定時間</option>
@@ -10806,57 +10766,42 @@
         <div class="form-row"><label>連接器名稱</label><input class="input" style="width:100%;" value="台北倉 ERP（ECOUNT）" /></div>
         <div class="form-row"><label>API 基礎網址</label><input class="input" style="width:100%;" value="https://api.ecount.com/v1" /></div>
         <div class="form-row"><label>驗證方式</label><input class="input" style="width:100%; background:var(--hover); color:var(--text-muted);" value="API Key（Header）" disabled /></div>
-        <div class="form-row"><label>API Key</label><input class="input" style="width:100%;" value="••••••••3f9d" disabled /><div class="help">如需更換，請點擊「重新輸入」</div></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-          <div class="form-row" style="margin-bottom:0;"><label>請求逾時</label><input class="input" style="width:100%;" value="10 秒" disabled /></div>
-          <div class="form-row" style="margin-bottom:0;"><label>重試次數</label><input class="input" style="width:100%;" value="3 次" disabled /></div>
-        </div>
+        <div class="form-row" style="margin-bottom:0;"><label>API Key</label><input class="input" style="width:100%;" value="••••••••3f9d" disabled /><div class="help">如需更換，請點擊「重新輸入」；請求逾時與重試次數由系統統一設定。</div></div>
       </div>
     </div>
 
-    <div id="ih-d-mapping" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:720px;">
+    <div id="ih-d-mapping" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:820px;">
       <div class="card" style="padding:20px 24px;">
-        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">外部欄位 ↔ CB 標準欄位</div>
-        <div class="help" style="margin-bottom:12px;">「資料型別」由 IT 手動指定，系統不自動判斷；選「日期」需另選日期格式，供條件觸發解析用</div>
-        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:4px; font-size:10px; color:var(--text-muted); font-weight:600;">
-          <span></span><span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span></span>
+        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">外部欄位 ↔ CB 標準欄位（彙整自各動作回傳欄位）</div>
+        <div class="help" style="margin-bottom:12px;">此清單彙整自本連接器所有已定義動作的「回傳欄位」設定；新增欄位對應請至「動作設定」頁籤新增／編輯對應動作，此處僅可微調既有對應。「資料型別」由 IT 於動作設定時手動指定，系統不自動判斷；日期格式階段一暫不開放設定，統一以系統標準格式解析</div>
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 100px 140px; gap:8px; align-items:center; margin-bottom:4px; font-size:10px; color:var(--text-muted); font-weight:600;">
+          <span></span><span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span>所屬動作</span>
         </div>
-        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:8px;">
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 100px 140px; gap:8px; align-items:center; margin-bottom:8px;">
           <span style="font-size:14px;">📦</span>
           <input class="input" style="width:100%; background:var(--hover);" value="item_code" readonly />
           <span style="text-align:center; color:var(--text-muted);">←</span>
           <input class="input" style="width:100%;" value="item_no" />
           <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
-          <button class="btn ghost sm">✕</button>
+          <span class="badge info" style="font-size:10px; justify-self:start;">查詢庫存數量</span>
         </div>
-        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center; margin-bottom:8px;">
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 100px 140px; gap:8px; align-items:center; margin-bottom:8px;">
           <span style="font-size:14px;">🔢</span>
           <input class="input" style="width:100%; background:var(--hover);" value="stock_qty" readonly />
           <span style="text-align:center; color:var(--text-muted);">←</span>
           <input class="input" style="width:100%;" value="qty_on_hand" />
           <select class="input" style="width:100%;"><option selected>數值</option><option>文字／狀態</option><option>日期</option></select>
-          <button class="btn ghost sm">✕</button>
+          <span class="badge info" style="font-size:10px; justify-self:start;">查詢庫存數量</span>
         </div>
-        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 120px 32px; gap:8px; align-items:center;">
+        <div style="display:grid; grid-template-columns:36px 1fr 24px 1fr 100px 140px; gap:8px; align-items:center;">
           <span style="font-size:14px;">📅</span>
           <input class="input" style="width:100%; background:var(--hover);" value="contract_end_date" readonly />
           <span style="text-align:center; color:var(--text-muted);">←</span>
           <input class="input" style="width:100%;" value="contract_expiry" />
-          <select class="input" style="width:100%;" onchange="ihMapToggleDateFormat(this)"><option>文字／狀態</option><option>數值</option><option selected>日期</option></select>
-          <button class="btn ghost sm">✕</button>
+          <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option selected>日期</option></select>
+          <span class="badge info" style="font-size:10px; justify-self:start;">查詢庫存數量</span>
         </div>
-        <div id="ih-map-date-format" style="margin-top:8px; padding:10px 12px; background:var(--hover); border-radius:var(--radius-sm); display:flex; align-items:center; gap:10px;">
-          <label style="font-size:11px; font-weight:600; margin:0;">contract_end_date 的日期格式</label>
-          <select class="input" style="width:200px;"><option>ISO 8601</option><option>YYYY-MM-DD</option><option>YYYY/MM/DD</option><option>Unix Timestamp</option></select>
-        </div>
-        <button class="btn ghost sm" style="margin-top:10px;">＋ 新增對應</button>
       </div>
-      <script>
-        function ihMapToggleDateFormat(sel) {
-          var box = document.getElementById('ih-map-date-format');
-          if (box) box.style.display = (sel.value === '日期') ? 'flex' : 'none';
-        }
-      </script>
     </div>
 
     <div id="ih-d-action" class="ih-detail-pane" style="display:none; padding-top:20px; max-width:640px;">
@@ -10867,7 +10812,6 @@
             <div style="display:flex; align-items:center; gap:7px;">
               <span class="badge info" style="font-size:10px;">GET</span>
               <span style="font-size:13px; font-weight:600;">查詢庫存數量</span>
-              <code style="font-size:11px; color:var(--text-muted);">get_stock</code>
             </div>
             <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">/warehouses/{warehouse_id}/items/{item_code}/stock</div>
           </div>
@@ -10896,12 +10840,6 @@
             <div class="help">相對於連接器的 API 基礎網址；路徑中可用 <code>{參數名稱}</code> 代表帶入的參數</div>
           </div>
         </div>
-        <div class="form-row">
-          <label>識別碼</label>
-          <input class="input" style="width:100%; max-width:280px;" placeholder="get_order_status" />
-          <div class="help">系統內部引用用，員工不會看到；建議英文小寫加底線</div>
-        </div>
-
         <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
           <div style="font-weight:600; font-size:12px; margin-bottom:2px;">參數（Request・呼叫這支 API 前，你要先給它什麼）</div>
           <div class="help" style="margin-bottom:8px;">呼叫這支 API 時要帶入的條件，例如「查哪一筆」</div>
@@ -10918,6 +10856,23 @@
             </div>
           </div>
           <button class="btn ghost sm" style="margin-top:8px;" onclick="ihAddActionParam()">＋ 新增參數</button>
+        </div>
+
+        <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <div style="font-weight:600; font-size:12px;">測試呼叫</div>
+            <button class="btn ghost sm" onclick="ihTestActionCall()">測試呼叫</button>
+          </div>
+          <div class="help" style="margin-bottom:8px;">路徑與參數填好後，可以先實際打一次這支 API，看看外部系統真正回傳的資料長什麼樣，再決定下方回傳欄位怎麼設，不用切到別的工具比對。</div>
+          <div id="ih-test-call-result" style="display:none;">
+            <div style="margin-bottom:6px;"><span class="badge success" style="font-size:10px;">HTTP 200 · 184ms</span></div>
+            <pre style="background:var(--hover); border-radius:var(--radius-sm); padding:12px; font-size:11px; line-height:1.6; overflow-x:auto; margin:0; color:var(--text-secondary);">{
+  "order_id": "A20260810001",
+  "status": "shipped",
+  "created_at": "2026-08-09T14:22:00+08:00",
+  "amount": 1280
+}</pre>
+          </div>
         </div>
 
         <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
@@ -10957,14 +10912,12 @@
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); font-size:13px;">
           <span>基礎連線</span><span class="badge success">HTTP 200 · 212ms</span>
         </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); font-size:13px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; font-size:13px;">
           <span>憑證驗證</span><span class="badge success">通過</span>
         </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; font-size:13px;">
-          <span>欄位讀取</span><span class="badge success">共 5 個欄位</span>
-        </div>
       </div>
-      <button class="btn sm" style="margin-top:12px;">重新測試</button>
+      <div class="help" style="margin-top:8px;">連接器層級僅能驗證網址與 API Key 是否有效；實際資料要看哪個欄位、長什麼樣，請至「動作設定」個別動作使用「測試呼叫」。</div>
+      <button class="btn sm" style="margin-top:8px;">重新測試</button>
     </div>
   </div><!-- /ih-detail-view -->
     </section>
@@ -23357,7 +23310,7 @@ function abv2PickSeg(el){
   function ihRenderActions(connectorName) {
     var sel = document.getElementById('ih-trig-action');
     var actions = IH_CONNECTOR_ACTIONS[connectorName] || [];
-    sel.innerHTML = actions.map(function(a){ return '<option>'+a.label+'（'+a.key+'）</option>'; }).join('')
+    sel.innerHTML = actions.map(function(a){ return '<option>'+a.label+'</option>'; }).join('')
       || '<option disabled selected>此連接器尚未定義任何查詢動作</option>';
     ihRenderActionParamValues(sel.value);
   }
@@ -23445,6 +23398,10 @@ function abv2PickSeg(el){
       '<select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>' +
       '<button class="btn ghost sm" onclick="this.parentElement.remove()">✕</button>';
     wrap.appendChild(row);
+  }
+  function ihTestActionCall() {
+    var box = document.getElementById('ih-test-call-result');
+    if (box) box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
   }
 
   document.getElementById('ih-trig-connector') && ihRenderActions(document.getElementById('ih-trig-connector').value);
