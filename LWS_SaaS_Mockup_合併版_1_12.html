@@ -10859,19 +10859,61 @@
         </div>
 
         <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
+          <div class="form-row" style="margin-bottom:0;">
+            <label>資料結構</label>
+            <div style="display:flex; gap:20px; margin-top:6px;">
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:400; font-size:13px;">
+                <input type="radio" name="ih-action-datashape" checked onchange="ihToggleDataShape(false)" /> 單筆物件
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:400; font-size:13px;">
+                <input type="radio" name="ih-action-datashape" onchange="ihToggleDataShape(true)" /> 物件陣列
+              </label>
+            </div>
+            <div class="help">單筆物件：這支 API 一次只查到一筆資料，例如查詢單一商品庫存。物件陣列：這支 API 一次回傳一批資料，例如查詢所有即將到期的合約；下方回傳欄位會套用在陣列中的每一筆物件。</div>
+          </div>
+          <div class="form-row" id="ih-array-path-wrap" style="display:none; margin-top:10px; margin-bottom:0;">
+            <label>陣列路徑</label>
+            <input class="input" style="width:100%; max-width:320px;" id="ih-array-path" value="results" />
+            <div class="help">回應中「哪個欄位」裝著這批資料的陣列；若整個回應本身就是陣列，留空即可</div>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border); margin:16px 0; padding-top:14px;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
             <div style="font-weight:600; font-size:12px;">測試呼叫</div>
             <button class="btn ghost sm" onclick="ihTestActionCall()">測試呼叫</button>
           </div>
           <div class="help" style="margin-bottom:8px;">路徑與參數填好後，可以先實際打一次這支 API，看看外部系統真正回傳的資料長什麼樣，再決定下方回傳欄位怎麼設，不用切到別的工具比對。</div>
           <div id="ih-test-call-result" style="display:none;">
-            <div style="margin-bottom:6px;"><span class="badge success" style="font-size:10px;">HTTP 200 · 184ms</span></div>
-            <pre style="background:var(--hover); border-radius:var(--radius-sm); padding:12px; font-size:11px; line-height:1.6; overflow-x:auto; margin:0; color:var(--text-secondary);">{
+            <div id="ih-test-result-flat">
+              <div style="margin-bottom:6px;"><span class="badge success" style="font-size:10px;">HTTP 200 · 184ms</span></div>
+              <pre style="background:var(--hover); border-radius:var(--radius-sm); padding:12px; font-size:11px; line-height:1.6; overflow-x:auto; margin:0; color:var(--text-secondary);">{
   "order_id": "A20260810001",
   "status": "shipped",
   "created_at": "2026-08-09T14:22:00+08:00",
   "amount": 1280
 }</pre>
+            </div>
+            <div id="ih-test-result-array" style="display:none;">
+              <div style="margin-bottom:6px;"><span class="badge success" style="font-size:10px;">HTTP 200 · 320ms</span> <span class="badge info" style="font-size:10px;">陣列，共 2 筆</span></div>
+              <pre style="background:var(--hover); border-radius:var(--radius-sm); padding:12px; font-size:11px; line-height:1.6; overflow-x:auto; margin:0; color:var(--text-secondary);">{
+  "results": [
+    {
+      "employee_id": "E1001",
+      "name": "王小明",
+      "contract_end_date": "2026-09-05",
+      "manager": { "name": "李經理" }
+    },
+    {
+      "employee_id": "E1002",
+      "name": "陳小華",
+      "contract_end_date": "2026-09-12",
+      "manager": { "name": "張經理" }
+    }
+  ]
+}</pre>
+              <div class="help" style="margin-top:6px;">陣列中每一筆結構相同，下方僅需依「第 1 筆」示範設定欄位對應，其餘筆數會套用同一組規則</div>
+            </div>
           </div>
         </div>
 
@@ -10879,22 +10921,59 @@
           <div style="font-weight:600; font-size:12px; margin-bottom:2px;">這支動作回傳的欄位（Response・API 執行完會還給你什麼）</div>
           <div class="help" style="margin-bottom:8px;">在這裡宣告的欄位，存檔後會自動加進本連接器共用的「欄位對應」清單，不用再跳去別的分頁重複設定；如果欄位跟其他動作重複（例如都會回傳 item_code），系統會沿用既有的對應，不會重複新增。</div>
           <div id="ih-action-response-fields">
-            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px; font-size:10px; color:var(--text-muted); font-weight:600;">
-              <span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span></span>
+            <div id="ih-response-fields-flat">
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px; font-size:10px; color:var(--text-muted); font-weight:600;">
+                <span>CB 標準欄位</span><span></span><span>外部欄位</span><span>資料型別</span><span></span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
+                <input class="input" style="width:100%;" placeholder="order_status" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" placeholder="status" />
+                <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center;">
+                <input class="input" style="width:100%;" placeholder="order_date" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" placeholder="created_at" />
+                <select class="input" style="width:100%;"><option>日期</option><option>文字／狀態</option><option>數值</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
-              <input class="input" style="width:100%;" placeholder="order_status" />
-              <span style="text-align:center; color:var(--text-muted);">←</span>
-              <input class="input" style="width:100%;" placeholder="status" />
-              <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
-              <button class="btn ghost sm">✕</button>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center;">
-              <input class="input" style="width:100%;" placeholder="order_date" />
-              <span style="text-align:center; color:var(--text-muted);">←</span>
-              <input class="input" style="width:100%;" placeholder="created_at" />
-              <select class="input" style="width:100%;"><option>日期</option><option>文字／狀態</option><option>數值</option></select>
-              <button class="btn ghost sm">✕</button>
+            <div id="ih-response-fields-array" style="display:none;">
+              <div class="help" style="margin-bottom:8px;">路徑相對於陣列中的「每一筆物件」，不含陣列本身；支援點記號指到巢狀值（例如 <code>manager.name</code>）</div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px; font-size:10px; color:var(--text-muted); font-weight:600;">
+                <span>CB 標準欄位</span><span></span><span>外部欄位路徑</span><span>資料型別</span><span></span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
+                <input class="input" style="width:100%;" value="employee_id" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" value="employee_id" />
+                <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option>日期</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
+                <input class="input" style="width:100%;" value="employee_name" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" value="name" />
+                <select class="input" style="width:100%;"><option selected>文字／狀態</option><option>數值</option><option>日期</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center; margin-bottom:6px;">
+                <input class="input" style="width:100%;" value="contract_end_date" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" value="contract_end_date" />
+                <select class="input" style="width:100%;"><option>文字／狀態</option><option>數值</option><option selected>日期</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 24px 1fr 100px 32px; gap:8px; align-items:center;">
+                <input class="input" style="width:100%;" value="manager_name" />
+                <span style="text-align:center; color:var(--text-muted);">←</span>
+                <input class="input" style="width:100%;" value="manager.name" />
+                <select class="input" style="width:100%;"><option selected>文字／狀態</option><option>數值</option><option>日期</option></select>
+                <button class="btn ghost sm">✕</button>
+              </div>
+              <div class="help" style="margin-top:8px;">↑ <code>manager.name</code> 示範巢狀路徑：先進到 <code>manager</code> 物件，再取裡面的 <code>name</code></div>
             </div>
           </div>
           <button class="btn ghost sm" style="margin-top:8px;" onclick="ihAddActionResponseField()">＋ 新增回傳欄位</button>
@@ -23402,6 +23481,18 @@ function abv2PickSeg(el){
   function ihTestActionCall() {
     var box = document.getElementById('ih-test-call-result');
     if (box) box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+  }
+  function ihToggleDataShape(isArray) {
+    var pathWrap = document.getElementById('ih-array-path-wrap');
+    if (pathWrap) pathWrap.style.display = isArray ? '' : 'none';
+    var flatResult = document.getElementById('ih-test-result-flat');
+    var arrResult = document.getElementById('ih-test-result-array');
+    if (flatResult) flatResult.style.display = isArray ? 'none' : 'block';
+    if (arrResult) arrResult.style.display = isArray ? 'block' : 'none';
+    var flatFields = document.getElementById('ih-response-fields-flat');
+    var arrFields = document.getElementById('ih-response-fields-array');
+    if (flatFields) flatFields.style.display = isArray ? 'none' : 'block';
+    if (arrFields) arrFields.style.display = isArray ? 'block' : 'none';
   }
 
   document.getElementById('ih-trig-connector') && ihRenderActions(document.getElementById('ih-trig-connector').value);
