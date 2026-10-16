@@ -309,14 +309,15 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
       </div>
       <div class="tools">
         <div class="f role" style="grid-auto-flow:column;align-items:center;gap:6px"><label for="role">示範身分</label>
-          <select id="role"><option value="admin">總管理員</option><option value="mgr">業務一部主管 王建民</option><option value="dir">業務處長 張國棟</option></select></div>
+          <select id="role"><option value="admin">總管理員</option><option value="mgr">業務一部主管 王建民</option><option value="dir">業務處長 張國棟（另有設定權限）</option></select></div>
         <div id="periodWrap" style="display:flex;gap:8px;align-items:center">
           <div class="seg" id="period" role="group" aria-label="分析期間">
-            <button data-d="7">7 天</button><button data-d="30" class="on">30 天</button><button data-d="90">90 天</button><button data-d="0">自訂</button>
+            <button data-d="7">7 天</button><button data-d="30" class="on">30 天</button><button data-d="90">90 天</button><button data-d="180">近 180 天</button><button data-d="0">自訂</button>
           </div>
           <span class="range num">2026/09/08 – 2026/10/07</span>
         </div>
-        <span id="liveWrap" class="live-tag" hidden>依最新資料（已匯入至 2026/10/07）判斷，不受分析期間影響</span>
+        <span id="liveWrap" class="live-tag" hidden>依最新資料判斷，不受分析期間影響</span>
+        <span id="updWrap" style="display:flex;gap:6px;align-items:center"><span class="range num" id="updTxt">資料更新至 2026/10/07 03:00</span><button class="btn" id="manUpd" type="button">手動更新</button></span>
         <label class="notes-toggle"><input type="checkbox" id="notesChk" checked> 規格註記</label>
       </div>
     </header>
@@ -324,7 +325,7 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
 
     <!-- ===== 總覽 ===== -->
     <section class="page" id="p-ov" hidden>
-      <div class="notebox">本原型對應《對話互動分析 PRD V2.0》，黃色標籤為 V2 調整處；規格與原型不一致時以 PRD 為準。資料範圍：總管理員看全公司，可用「檢視」切換各部門；其他擁有本模組權限的人只看自己所屬部門（含子部門）。右上角「示範身分」可切換看差異。示意資料皆為虛構。</div>
+      <div class="notebox">本原型對應《對話互動分析 PRD V2.0》，黃色標籤為 V2 調整處；規格與原型不一致時以 PRD 為準。重點：資料每日 03:00 排程更新，日間可按「手動更新」；只計算近 180 天；時間一律顯示 yyyy/mm/dd hh:mm；處理狀態只有待處理與不需處理（同仁回覆後訊號自動消除）。資料範圍：總管理員看全公司，可用「檢視」切換各部門；其他人只看自己所屬部門（含子部門）。示範身分中，業務處長另有設定權限。示意資料皆為虛構。</div>
 
       <div><div class="seg modeseg" id="ovMode" role="tablist" aria-label="對內或對外" style="margin-bottom:0"><button data-m="int">對內</button><button data-m="ext">對外</button></div><span class="note">V2：總覽分對內／對外兩個分頁</span></div>
       <div id="ovU" style="display:grid;gap:18px">
@@ -393,7 +394,7 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
           <div class="f" data-mode="int"><label for="cvSt">狀態</label><select id="cvSt"><option value="all">全部</option><option value="silent">沉默</option></select></div>
           <div class="f" data-mode="ext"><label for="cvKind">外部帳號類型</label><select id="cvKind"><option value="all">全部</option><option value="LINE">LINE 用戶</option><option value="LW">其他公司 LINE WORKS</option><option value="MIX">混合</option></select></div>
           <div class="f" data-mode="ext"><label for="cvTag">標籤</label><select id="cvTag"><option value="all">全部</option><option value="H">熱絡</option></select></div>
-          <div class="f"><label for="cvSort">排序</label><select id="cvSort"><option value="msgs">訊息量</option><option value="recent">最近互動</option><option value="idle">最久沒動</option><option value="name">名稱</option></select></div>
+          <div class="f"><label for="cvSort">排序</label><select id="cvSort"><option value="msgs">訊息量</option><option value="new">最後互動（新→舊）</option><option value="old">最後互動（舊→新）</option><option value="name">名稱</option></select></div>
           <div class="f" id="cvMemWrap" hidden><label id="cvMemLab">成員</label><button class="btn" id="cvMemBtn" type="button"></button></div>
           <button class="btn" data-toast="已依目前篩選匯出 CSV（原型示意）">匯出 CSV</button>
         </div>
@@ -404,7 +405,7 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
 
     <!-- ===== 對外訊號洞察 ===== -->
     <section class="page" id="p-todo" hidden>
-      <div class="notebox">V2：這一頁看「現在」需要處理的對外對話，依最新匯入資料判斷，不跟著分析期間變動。訊號（未回覆客戶、很久沒動）、處理狀態、負責人都在這裡查看與更新。</div>
+      <div class="notebox">V2：這一頁看「現在」需要處理的對外對話，依最新資料更新時間判斷，不跟著分析期間變動。訊號（未回覆客戶、很久沒動）、處理狀態、負責人都在這裡查看與更新。</div>
       <div class="attn">
         <div><strong class="num" id="pendN">0</strong><b>個對外對話待處理</b><p id="pendSub"></p></div>
         <button class="btn pri" id="toPend">只看待處理</button>
@@ -422,18 +423,19 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
       <div class="panel">
         <div class="filters">
           <div class="f grow"><label for="q">搜尋</label><input id="q" placeholder="對話、同仁或客戶名稱"></div>
-          <div class="f"><label for="fSt">處理狀態</label><select id="fSt"><option value="all">全部</option><option value="pending">待處理</option><option value="done">已處理</option><option value="skip">不需處理</option></select></div>
+          <div class="f"><label for="fSt">處理狀態</label><select id="fSt"><option value="all">全部</option><option value="pending">待處理</option><option value="skip">不需處理</option></select></div>
           <div class="f"><label for="fSig">訊號</label><select id="fSig"><option value="all">全部</option><option value="U">未回覆客戶</option><option value="S">很久沒動</option></select></div>
           <div class="f"><label for="fKind">外部帳號類型</label><select id="fKind"><option value="all">全部</option><option value="LINE">LINE 用戶</option><option value="LW">其他公司 LINE WORKS</option><option value="MIX">混合</option></select></div>
           <div class="f"><label for="fDept">部門</label><select id="fDept"></select></div>
           <div class="f" id="fOwnerWrap" hidden><label>負責人</label><button class="btn" id="fOwnerBtn" type="button"></button></div>
+          <div class="f"><label for="fSort">排序</label><select id="fSort"><option value="old">最後互動（舊→新）</option><option value="new">最後互動（新→舊）</option></select></div>
           <button class="btn" data-toast="已依目前篩選匯出 CSV（原型示意）">匯出 CSV</button>
         </div>
         <div class="tbl-wrap"><table>
           <thead><tr><th>對話</th><th>訊號</th><th class="r">最後互動</th><th>處理狀態</th><th>負責人</th></tr></thead>
           <tbody id="tbody"></tbody></table></div>
         <div class="pager"><span id="count"></span><span id="pg" style="display:flex;gap:8px;align-items:center"></span></div>
-        <p class="sub-t" style="margin:8px 0 0">只列出命中訊號、或曾經被標記為已處理／不需處理的對話；排序：待處理 → 已處理／不需處理，同組內閒置天數多→少。</p>
+        <p class="sub-t" style="margin:8px 0 0">只列出命中訊號、或已標記為不需處理的對話；排序：待處理 → 不需處理，同組內依最後互動時間。同仁回覆客戶後，下次資料更新時訊號自動消除。</p>
       </div>
     </section>
 
@@ -441,15 +443,16 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
     <section class="page" id="p-mem" hidden>
       <div class="panel">
         <div class="ph"><h2>成員互動洞察<span class="note">V2：成員使用＋同仁對外互動</span></h2></div>
-        <p class="sub-t" style="margin:-4px 0 12px">顯示互動量與涵蓋範圍，不代表業績或績效。點欄位標題排序。</p>
+        <div class="seg modeseg" id="memMode" role="tablist" aria-label="對內或對外"><button data-m="int">對內</button><button data-m="ext">對外</button></div><span class="note">V2：對內／對外分頁</span>
+        <p class="sub-t" style="margin:4px 0 12px">顯示互動量與涵蓋範圍，不代表業績或績效。點欄位標題排序。</p>
         <div class="filters">
           <div class="f grow"><label for="mq">搜尋</label><input id="mq" placeholder="姓名或帳號"></div>
           <div class="f"><label for="mDept">部門</label><select id="mDept"></select></div>
           <div class="f" id="mStWrap"><label for="mSt">使用狀態</label><select id="mSt"><option value="all">全部</option><option value="live">活躍</option><option value="silent">沉默</option><option value="idle">未使用</option><option value="never">從未登入</option></select></div>
           <button class="btn" data-toast="已依目前篩選匯出 CSV，只含你看得到的欄位（原型示意）">匯出 CSV</button>
         </div>
-        <div class="grp-legend" id="mLegend"></div>
-        <div class="tbl-wrap"><table style="min-width:1320px"><thead id="mHead"></thead><tbody id="mBody"></tbody></table></div>
+        
+        <div class="tbl-wrap"><table style="min-width:960px"><thead id="mHead"></thead><tbody id="mBody"></tbody></table></div>
         <div class="pager"><span id="mCount"></span><span>列尾連結可跳到該成員的對話或待處理</span></div>
       </div>
     </section>
@@ -459,9 +462,9 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
       <div class="panel">
         <div class="ph"><h2>資料來源</h2><span class="chip c-ok">正常</span></div>
         <div class="set-grid">
-          <div class="stat"><span class="k">資料起點</span><span class="v num">2026/04/10</span><span class="sub-t">開通時最多補回 180 天</span></div>
-          <div class="stat"><span class="k">已匯入至</span><span class="v num">2026/10/07</span><span class="sub-t">分析期間的迄日預設為此日；對外訊號洞察以此日判斷</span></div>
-          <div class="stat"><span class="k">自動匯入</span><span class="v">每日 03:00</span><span class="sub-t">下次匯入：2026/10/17 03:00</span></div>
+          <div class="stat"><span class="k">資料起點</span><span class="v num">2026/04/10</span><span class="sub-t">只計算近 180 天</span></div>
+          <div class="stat"><span class="k">資料更新至</span><span class="v num" id="setUpd">2026/10/07 03:00</span><span class="sub-t">排程或手動更新完成的時間</span></div>
+          <div class="stat"><span class="k">排程更新</span><span class="v">每日 03:00</span><span class="sub-t">下次排程：2026/10/08 03:00；日間可手動更新</span></div>
         </div>
       </div>
       <div class="panel">
@@ -475,7 +478,7 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
           </div>
           <h4 style="margin:8px 0 0;font-size:13px">客戶聯繫</h4>
           <div class="row" style="align-items:start">
-            <div class="f"><label for="tStale">很久沒動：超過幾天沒有任何互動</label><input id="tStale" type="number" value="14" min="1" max="90" style="width:120px"><span class="hint">日曆天，從最後一則訊息算到最新匯入日</span></div>
+            <div class="f"><label for="tStale">很久沒動：超過幾天沒有任何互動</label><input id="tStale" type="number" value="14" min="1" max="90" style="width:120px"><span class="hint">日曆天，從最後一則訊息算到資料更新時間</span></div>
             <div class="f"><label for="tHot">熱絡：平均每天幾則以上</label><input id="tHot" type="number" value="3" min="1" max="999" style="width:120px"><span class="hint">分析期間的日均訊息數</span></div>
             <div class="f"><label for="tReply">回覆超時：客戶發訊後幾個營業小時沒回</label><input id="tReply" type="number" value="4" min="1" max="72" style="width:120px"><span class="hint">用於「未回覆客戶」與成員互動洞察「超時比例」</span></div>
           </div>
@@ -491,7 +494,7 @@ th.grp-u{border-top:2px solid var(--int)} th.grp-c{border-top:2px solid var(--ac
         <div class="ph"><h2>Bot 通知負責人</h2><label class="switch"><input type="checkbox" id="botOn"> 啟用</label></div>
         <div class="two">
           <div class="form" style="align-content:start">
-            <p class="sub-t" style="margin:0">對話出現「未回覆客戶」或「很久沒動」時，Bot 在 LINE WORKS 通知該對話的負責人，請他回報處理狀態；每個營業日重複提醒，直到回報「已處理」或「不需處理」為止。</p>
+            <p class="sub-t" style="margin:0">對話出現「未回覆客戶」或「很久沒動」時，Bot 在 LINE WORKS 通知該對話的負責人；每個營業日重複提醒，直到訊號消除（已回覆客戶）或標記「不需處理」為止。</p>
             <div class="row">
               <div class="f"><label for="botTime">每日通知時間</label><input id="botTime" type="time" value="09:00"><span class="hint">每個營業日一次，彙整成一則訊息</span></div>
               <div class="f"><label for="botBot">推播 Bot</label><select id="botBot"><option>（請選擇）</option><option>WorksHub+ 顧問</option></select></div>
@@ -526,7 +529,8 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function nf(n){return n.toLocaleString('en-US')}
 function fmtD(d){return (d.getMonth()+1)+'/'+String(d.getDate()).padStart(2,'0')}
 function dOf(b){const d=new Date(END);d.setDate(d.getDate()-b);return d}
-function ago(n){return n===0?'今天':n===1?'昨天':n+' 天前'}
+function ago(n){const d=dOf(n),p=x=>String(x).padStart(2,'0');return d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(9+(n*7)%9)+':'+p((n*13+7)%60)}
+const NOW='2026/10/16 14:20';
 function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2200)}
 function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 
@@ -542,6 +546,7 @@ const MEM=Object.keys(DEPT).map((n,i)=>{const st=NEVER.has(n)?'never':IDLE.has(n
   const use=st==='live'?Math.round(8+rnd()*14):0;const talk=st==='live'?Math.max(1,use-Math.round(rnd()*5)):0;
   const im=st==='live'?Math.round(use*(6+rnd()*18)):0;const em=st==='live'&&SALES.has(n)?Math.round(use*(2+rnd()*9)):0;
   return {n,acc:'user'+String(i+1).padStart(2,'0')+'@coolbe-demo.com',dept:DEPT[n],st,use,talk,im,em,cv:st==='live'?Math.round(3+rnd()*12):0,last:st==='never'?null:st==='idle'?Math.round(31+rnd()*40):Math.round(rnd()*3)}});
+MEM.push({n:'吳小安',acc:'user40@coolbe-demo.com',dept:null,st:'live',use:3,talk:2,im:12,em:0,cv:2,last:1});
 const MN=Object.fromEntries(MEM.map(m=>[m.n,m]));
 const SILENT_M={許志明:22,陳建良:18,李冠廷:16,洪志成:27};
 MEM.forEach(m=>{m.lt=m.st==='live'?(SILENT_M[m.n]!=null?SILENT_M[m.n]:Math.round(rnd()*4)):null;if(SILENT_M[m.n]!=null){m.talk=Math.min(m.talk,2);m.im=Math.round(m.im*.1);m.em=0}});
@@ -569,8 +574,8 @@ const EXT=RAW.map((r,i)=>{const c={id:'e'+i,name:r[2]==='一對一'?r[0]+'（'+r
 function sigs(){EXT.forEach(c=>{c.sig=[];if(c.u)c.sig.push('U');if(c.idle>=TH.stale)c.sig.push('S');if(c.msgs/30>=TH.hot)c.sig.push('H');const need=c.u||c.idle>=TH.stale;
   if(need&&c.status==='none')c.status='pending';if(!need&&c.status==='pending')c.status='none';c.need=need})}
 sigs();
-EXT[23].status='done';EXT[23].log=[['10/06','張雅婷（Bot 回報）','標記為已處理','']];EXT[23].memo='已約 10/15 到店說明';
-EXT[20].status='skip';EXT[20].log=[['10/04','張雅婷（Bot 回報）','標記為不需處理','']];
+EXT[23].u=false;EXT[23].log=[['2026/10/06 10:12','系統','同仁已回覆，訊號消除','']];
+EXT[20].status='skip';EXT[20].log=[['2026/10/04 09:31','張雅婷（Bot 回報）','標記為不需處理','']];sigs();EXT[27].ownerDel=true;
 
 /* ---------- 使用狀況 ---------- */
 const days=[];for(let i=29;i>=0;i--)days.push(dOf(i));
@@ -588,8 +593,8 @@ function bars(el,data,col,label,stack){
   el.innerHTML=s+'</svg>'}
 
 /* ---------- 角色 ---------- */
-const ROLES={admin:{u:1,c:1,s:1,scope:'all'},mgr:{u:1,c:1,s:0,scope:kids('業務一部')},dir:{u:1,c:1,s:0,scope:kids('業務處')}};
-const mems=()=>MEM.filter(m=>viewDepts().includes(m.dept));
+const ROLES={admin:{u:1,c:1,s:1,scope:'all'},mgr:{u:1,c:1,s:0,scope:kids('業務一部')},dir:{u:1,c:1,s:1,scope:kids('業務處')}};
+const mems=()=>role.scope==='all'&&viewDept==='all'?MEM:MEM.filter(m=>viewDepts().includes(m.dept));
 const ints=()=>INTC.filter(c=>c.members.some(n=>viewDepts().includes(DEPT[n])));
 let role=ROLES.admin,viewDept='all';
 const effDepts=()=>(role.scope==='all'?DN:(role.scope||[]));
@@ -624,9 +629,9 @@ function renderOv(){
     const rows=viewDepts().map(d=>{const ms=MEM.filter(m=>m.dept===d),lv=ms.filter(m=>m.st==='live').length;return {d,n:ms.length,lv,rate:lv/ms.length,idle:ms.filter(m=>m.st==='idle').length,avg:Math.round(ms.reduce((a,m)=>a+m.im+m.em,0)/ms.length)}}).sort((a,b)=>a.rate-b.rate);
     $('#uDept').innerHTML=rows.map(r=>'<tr data-d="'+r.d+'"><td>'+r.d+'</td><td class="r num">'+r.n+'</td><td class="r num">'+r.lv+'</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:8px;background:var(--sunken);border-radius:4px;overflow:hidden;min-width:60px"><i style="display:block;height:100%;width:'+(r.rate*100)+'%;background:'+(r.rate<.8?'var(--warn)':'var(--accent)')+'"></i></div><span class="num">'+Math.round(r.rate*100)+'%</span></div></td><td class="r num"'+(r.idle?' style="color:var(--danger)"':'')+'>'+r.idle+'</td><td class="r num">'+r.avg+'</td></tr>').join('');
     const sm=M.filter(silentM).sort((a,b)=>b.lt-a.lt);
-    $('#uSilentM').innerHTML=sm.slice(0,5).map(m=>'<button class="item" data-m="'+m.n+'"><span class="nm">'+m.n+'</span><span class="chip c-s">'+m.lt+' 天沒發話</span><span class="meta">'+m.dept+' · 本期登入 '+m.use+' 天</span></button>').join('')||'<p class="empty">目前沒有沉默成員</p>';
+    $('#uSilentM').innerHTML=sm.slice(0,5).map(m=>'<button class="item" data-m="'+m.n+'"><span class="nm">'+m.n+'</span><span class="chip c-s">最後發話 '+ago(m.lt)+'</span><span class="meta">'+m.dept+' · 本期登入 '+m.use+' 天</span></button>').join('')||'<p class="empty">目前沒有沉默成員</p>';
     const sl=I.filter(c=>c.silent()).sort((a,b)=>b.idle-a.idle);
-    $('#uSilent').innerHTML=sl.slice(0,5).map(c=>'<button class="item" data-i="'+c.id+'"><span class="nm">'+esc(c.name)+'</span><span class="chip c-s">'+c.idle+' 天沒人發話</span><span class="meta">'+c.type+' · '+c.members.length+' 人</span></button>').join('')||'<p class="empty">目前沒有沉默的群組</p>';
+    $('#uSilent').innerHTML=sl.slice(0,5).map(c=>'<button class="item" data-i="'+c.id+'"><span class="nm">'+esc(c.name)+'</span><span class="chip c-s">最後互動 '+ago(c.idle)+'</span><span class="meta">'+c.type+' · '+c.members.length+' 人</span></button>').join('')||'<p class="empty">目前沒有沉默的群組</p>';
   }
   if(role.c){
     const E=ext(),tot=E.reduce((a,c)=>a+c.msgs,0);
@@ -642,9 +647,9 @@ function renderOv(){
 }
 $('#ovMode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ovMode=b.dataset.m;renderOv()});
 $('#uSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;uS=b.dataset.s;$$('#uSeg button').forEach(x=>x.classList.toggle('on',x===b));renderOv()});
-$('#uIdleCard').onclick=()=>{go('mem');$('#mSt').value='idle';$('#mDept').value='all';renderMem()};
-$('#uDept').addEventListener('click',e=>{const tr=e.target.closest('tr[data-d]');if(!tr)return;go('mem');$('#mDept').value=tr.dataset.d;$('#mSt').value='all';renderMem()});
-$('#uSilentMAll').onclick=()=>{go('mem');$('#mSt').value='silent';$('#mDept').value='all';renderMem()};
+$('#uIdleCard').onclick=()=>{memMode='int';mKey='';go('mem');$('#mSt').value='idle';$('#mDept').value='all';renderMem()};
+$('#uDept').addEventListener('click',e=>{const tr=e.target.closest('tr[data-d]');if(!tr)return;memMode='int';go('mem');$('#mDept').value=tr.dataset.d;$('#mSt').value='all';renderMem()});
+$('#uSilentMAll').onclick=()=>{memMode='int';go('mem');$('#mSt').value='silent';$('#mDept').value='all';renderMem()};
 $('#uSilentM').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b)toConv('int',b.dataset.m)});
 $('#uSilentAll').onclick=()=>{toConv('int','');$('#cvSt').value='silent';renderConv()};
 $('#uSilent').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(b)openDrawer(b.dataset.i)});
@@ -661,7 +666,7 @@ function renderConv(){
   const dsel=$('#cvDept'),dv=dsel.value;deptOpts(dsel,viewDepts());dsel.value=[...dsel.options].some(o=>o.value===dv)?dv:'all';
   const q=$('#cvq').value.trim(),d=dsel.value,so=$('#cvSort').value;
   $('#cvMemWrap').hidden=!cvMem;$('#cvMemBtn').textContent=cvMem+'　✕';$('#cvMemLab').textContent=cvMode==='int'?'參與者':'負責人';
-  const srt=so==='recent'?(a,b)=>a.idle-b.idle:so==='idle'?(a,b)=>b.idle-a.idle:so==='name'?(a,b)=>a.name.localeCompare(b.name,'zh-Hant'):(a,b)=>b.msgs-a.msgs;
+  const srt=so==='new'?(a,b)=>a.idle-b.idle:so==='old'?(a,b)=>b.idle-a.idle:so==='name'?(a,b)=>a.name.localeCompare(b.name,'zh-Hant'):(a,b)=>b.msgs-a.msgs;
   let base,types,head,row,label,hint;
   if(cvMode==='int'){
     const s=$('#cvSt').value;
@@ -674,7 +679,7 @@ function renderConv(){
     base=ext().filter(c=>(!q||(c.name+c.owner+c.company).includes(q))&&(d==='all'||DEPT[c.owner]===d)&&(kd==='all'||c.kind===kd)&&(tg==='all'||c.sig.includes(tg))&&(!cvMem||c.owner===cvMem));
     types=['all','一對一','群組'];label='對外對話';hint='資料範圍：'+scopeTxt()+'；處理狀態請到「對外訊號洞察」';
     head='<tr><th>對話</th><th>外部帳號類型</th><th>負責人</th><th class="r">本期訊息<br><span style="font-weight:400">我方／對方</span></th><th class="r">最後互動</th><th>標籤</th></tr>';
-    row=c=>{const me=Math.round(c.msgs*.48);return '<tr data-e="'+c.id+'"><td><b style="font-weight:500">'+esc(c.name)+'</b><div class="em">'+c.type+(c.type==='群組'?' · '+c.members+' 人':'')+'</div></td><td>'+KIND[c.kind]+'</td><td>'+c.owner+(c.manual.owner?' <span class="chip c-int" style="font-size:10px">手動</span>':'')+'<div class="em">'+DEPT[c.owner]+'</div></td><td class="r num">'+nf(c.msgs)+'<div class="em">'+me+' / '+(c.msgs-me)+'</div></td><td class="r">'+ago(c.idle)+'</td><td>'+(c.sig.includes('H')?'<span class="chip c-h">熱絡</span>':'')+'</td></tr>'};
+    row=c=>{const me=Math.round(c.msgs*.48);return '<tr data-e="'+c.id+'"><td><b style="font-weight:500">'+esc(c.name)+'</b><div class="em">'+c.type+(c.type==='群組'?' · '+c.members+' 人':'')+'</div></td><td>'+KIND[c.kind]+'</td><td>'+(c.ownerDel?'<span class="chip c-u">帳號已刪除</span>':c.owner+(c.manual.owner?' <span class="chip c-int" style="font-size:10px">手動</span>':'')+'<div class="em">'+DEPT[c.owner]+'</div>')+'</td><td class="r num">'+nf(c.msgs)+'<div class="em">'+me+' / '+(c.msgs-me)+'</div></td><td class="r">'+ago(c.idle)+'</td><td>'+(c.sig.includes('H')?'<span class="chip c-h">熱絡</span>':'')+'</td></tr>'};
   }
   if(!types.includes(cvType))cvType='all';
   const r=base.filter(c=>cvType==='all'||c.type===cvType).sort(srt);
@@ -690,12 +695,12 @@ $('#cvBody').addEventListener('click',e=>{const tr=e.target.closest('tr[data-i],
 
 /* ---------- 對外訊號洞察 ---------- */
 let page=1,ownerF='';
-const listed=c=>c.need||c.status==='done'||c.status==='skip';
+const listed=c=>c.need||c.status==='skip';
 function renderTodo(keep){
   if(!keep)page=1;
   const E=ext(),need=E.filter(c=>c.need),pend=E.filter(c=>c.status==='pending');
   $('#pendN').textContent=pend.length;
-  $('#pendSub').textContent='已處理 '+E.filter(c=>c.status==='done').length+' · 不需處理 '+E.filter(c=>c.status==='skip').length+(BOT.on?'　｜　Bot 通知開啟：負責人每個營業日收到通知並回報，此頁只能查看':'　｜　Bot 通知未開啟：由主管在下方清單更新狀態');
+  $('#pendSub').textContent='不需處理 '+E.filter(c=>c.status==='skip').length+(BOT.on?'　｜　Bot 通知開啟：負責人每個營業日收到通知並回報，此頁只能查看':'　｜　Bot 通知未開啟：由主管在下方清單更新狀態');
   const pct=E.length?need.length/E.length*100:0;
   $('#kNeed').innerHTML=need.length+' <small>/ '+E.length+' 個對外對話</small>';
   $('#kRisk').innerHTML=pct.toFixed(1)+'<small>%</small>';$('#kHealth').textContent='健康度 '+(100-pct).toFixed(1)+'%';
@@ -705,7 +710,7 @@ function renderTodo(keep){
   $('#fOwnerWrap').hidden=!ownerF;$('#fOwnerBtn').textContent=ownerF+'　✕';
   let r=E.filter(listed).filter(c=>(st==='all'||c.status===st)&&(sg==='all'||c.sig.includes(sg))&&(kd==='all'||c.kind===kd)&&(dp==='all'||DEPT[c.owner]===dp)&&(!ownerF||c.owner===ownerF)&&(!q||(c.name+c.owner+c.company).includes(q)));
   const rank=c=>c.status==='pending'?0:1;
-  r.sort((a,b)=>rank(a)-rank(b)||b.idle-a.idle||b.msgs-a.msgs);
+  const fs=$('#fSort').value;r.sort((a,b)=>rank(a)-rank(b)||(fs==='new'?a.idle-b.idle:b.idle-a.idle)||b.msgs-a.msgs);
   const pages=Math.max(1,Math.ceil(r.length/20));page=Math.min(page,pages);
   $('#tbody').innerHTML=r.slice((page-1)*20,page*20).map(c=>'<tr data-e="'+c.id+'"><td><b style="font-weight:500">'+esc(c.name)+'</b><div class="em">'+c.type+(c.type==='群組'?' · '+c.members+' 人':'')+' · '+KIND[c.kind]+'</div></td><td>'+sigChips(c,false)+'</td><td class="r">'+ago(c.idle)+'</td><td>'+stCell(c)+'</td><td>'+ownerCell(c)+'</td></tr>').join('')||'<tr><td colspan="5" class="empty">沒有符合條件的對話 <button class="btn" id="clrF" type="button">清除篩選</button></td></tr>';
   $('#count').textContent='共 '+r.length+' 個對話';
@@ -713,56 +718,61 @@ function renderTodo(keep){
   $('#pgP').onclick=()=>{page--;renderTodo(1)};$('#pgN').onclick=()=>{page++;renderTodo(1)};
   const cf=$('#clrF');if(cf)cf.onclick=()=>{clearT();renderTodo()};
 }
-function stCell(c){if(BOT.on||!role.c||c.status==='none')return stHtml(c);
-  return '<select class="osel" data-st="'+c.id+'" aria-label="處理狀態">'+[['pending','待處理'],['done','已處理'],['skip','不需處理']].map(o=>'<option value="'+o[0]+'"'+(c.status===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>'+(c.log.length?'<div class="em">'+c.log[0][1]+' · '+c.log[0][0]+'</div>':'')}
+function stCell(c){if(BOT.on||!role.c||c.status!=='pending')return stHtml(c);
+  return '<span class="st pending">待處理</span><div><button class="lnk" data-skip="'+c.id+'" type="button" style="padding:0">標記不需處理</button></div>'}
 function cands(c){return [c.owner].concat(c.type==='群組'?DEPTS[DEPT[c.owner]].filter(s=>s!==c.owner&&SALES.has(s)).slice(0,Math.min(2,c.members-2)):[]).concat(c.manual.orig&&c.manual.orig!==c.owner?[c.manual.orig]:[])}
-function ownerCell(c){const tag=c.manual.owner?'<span class="chip c-int" style="font-size:10px;margin-left:4px">手動</span>':'';
+function ownerCell(c){if(c.ownerDel)return '<span class="chip c-u">帳號已刪除</span><div class="em">無法通知，請依交接規範處理</div>';const tag=c.manual.owner?'<span class="chip c-int" style="font-size:10px;margin-left:4px">手動</span>':'';
   const opts=[...new Set(cands(c))];
   return '<select class="osel" data-own="'+c.id+'" aria-label="負責人">'+opts.map(o=>'<option'+(o===c.owner?' selected':'')+'>'+o+'</option>').join('')+'</select>'+tag+'<div class="em">'+DEPT[c.owner]+(LEFT.has(c.owner)?' · 已離職':'')+'</div>'}
 function clearT(){$('#q').value='';['#fSt','#fSig','#fKind','#fDept'].forEach(s=>$(s).value='all');ownerF=''}
-['#q','#fSt','#fSig','#fKind','#fDept'].forEach(s=>$(s).addEventListener('input',()=>renderTodo()));
+['#q','#fSt','#fSig','#fKind','#fDept','#fSort'].forEach(s=>$(s).addEventListener('input',()=>renderTodo()));
 $('#toPend').onclick=()=>{clearT();$('#fSt').value='pending';renderTodo()};
 $('#fOwnerBtn').onclick=()=>{ownerF='';renderTodo()};
-$('#tbody').addEventListener('change',e=>{const st=e.target.closest('select[data-st]');if(st){const c=EXT.find(x=>x.id===st.dataset.st);c.status=st.value;c.log.unshift(['10/16','你（主管）','標記為'+STL[st.value]]);renderAll();toast('已更新處理狀態');return}
+$('#tbody').addEventListener('change',e=>{
   const s=e.target.closest('select[data-own]');if(!s)return;const c=EXT.find(x=>x.id===s.dataset.own);
   if(!c.manual.orig)c.manual.orig=c.owner;const no=s.value;if(role.scope!=='all'&&!role.scope.includes(DEPT[no]))toast('改完後此對話將不在你的查看範圍內');
-  c.owner=no;c.manual.owner=no!==c.manual.orig?1:0;c.log.unshift(['10/16','你','負責人改為 '+no]);renderAll();toast('已將負責人改為 '+no)});
-$('#tbody').addEventListener('click',e=>{if(e.target.closest('select'))return;const tr=e.target.closest('tr[data-e]');if(tr)openDrawer(tr.dataset.e)});
+  c.owner=no;c.manual.owner=no!==c.manual.orig?1:0;c.log.unshift([NOW,'你','負責人改為 '+no]);renderAll();toast('已將負責人改為 '+no)});
+$('#tbody').addEventListener('click',e=>{const sk=e.target.closest('[data-skip]');if(sk){const td=sk.closest('td');td.innerHTML='<span class="st pending">待處理</span><div class="em" style="color:var(--danger)">標記後無法復原，確定？</div><button class="btn" data-skipok="'+sk.dataset.skip+'" type="button">確定不需處理</button> <button class="btn ghost" data-skipno type="button">取消</button>';return}
+  const ok=e.target.closest('[data-skipok]');if(ok){const c=EXT.find(x=>x.id===ok.dataset.skipok);c.status='skip';c.log.unshift([NOW,'你（主管）','標記為不需處理']);renderAll();toast('已標記為不需處理');return}
+  if(e.target.closest('[data-skipno]')){renderTodo(1);return}
+  if(e.target.closest('select,button'))return;const tr=e.target.closest('tr[data-e]');if(tr)openDrawer(tr.dataset.e)});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast)});
 
 /* ---------- 成員（合併） ---------- */
 const STN={live:'活躍',silent:'沉默',idle:'未使用',never:'從未登入'};const stOf=m=>silentM(m)?'silent':m.st;let mKey='',mDir=1;
-function extStat(n){const E=ext().filter(c=>c.owner===n),m=MN[n];if(!viewDepts().includes(m.dept)&&!E.length)return null;const reply=RS[n]||1.5;
-  return {sent:m.em,contacts:E.reduce((a,c)=>a+Math.max(1,c.members-1),0)||(m.em?Math.ceil(m.em/40):0),fresh:Math.ceil(E.length/3),own:E.length,need:E.filter(c=>c.need).length,reply:m.em||E.length?reply:null,over:m.em||E.length?Math.round(reply*9):null}}
+function extStat(n){const E=EXT.filter(c=>c.owner===n&&!c.ownerDel),m=MN[n],has=m.em||E.length,reply=RS[n]||1.5;
+  return {sent:m.em,contacts:E.reduce((a,c)=>a+Math.max(1,c.members-1),0)||(m.em?Math.ceil(m.em/40):0),fresh:Math.ceil(E.length/3),own:E.length,need:E.filter(c=>c.need).length,reply:has?reply:0,over:has?Math.round(reply*9):0}}
+let memMode='int';
 function renderMem(){
-  $('#mStWrap').hidden=!role.u;if(!role.u)$('#mSt').value='all';
+  $$('#memMode button').forEach(b=>b.classList.toggle('on',b.dataset.m===memMode));
+  $('#mStWrap').hidden=memMode!=='int';if(memMode!=='int')$('#mSt').value='all';
   const dsel=$('#mDept'),dv=dsel.value;deptOpts(dsel,viewDepts());dsel.value=[...dsel.options].some(o=>o.value===dv)?dv:'all';
   const cols=[['name','成員',''],['use','使用天數','r'],['talk','發話天數','r']];
-  if(role.u)cols.push(['st','使用狀態','','u'],['last','最後登入','','u'],['lt','最後發話','','u'],['im','對內訊息','r','u'],['cv','參與對話','r','u']);
-  if(role.c)cols.push(['sent','對外訊息','r','c'],['contacts','接觸聯絡人','r','c'],['fresh','新聯絡人','r','c'],['own','負責對話','r','c'],['need','需要跟進','r','c'],['reply','平均回覆','r','c'],['over','超時比例','r','c']);
-  $('#mLegend').innerHTML='<span><i style="background:var(--int)"></i>使用欄位（對內）</span><span><i style="background:var(--accent)"></i>對外欄位</span>';
+  if(memMode==='int')cols.splice(1,0,['st','使用狀態','']),cols.push(['last','最後登入',''],['lt','最後發話',''],['im','對內訊息','r'],['cv','參與對話','r']);
+  else cols.push(['sent','對外訊息','r','c'],['contacts','接觸聯絡人','r','c'],['fresh','新聯絡人','r','c'],['own','負責對話','r','c'],['need','需要跟進','r','c'],['reply','平均回覆','r','c'],['over','超時比例','r','c']);
   $('#mHead').innerHTML='<tr>'+cols.map(c=>'<th data-k="'+c[0]+'" class="'+(c[2]||'')+(c[3]?' grp-'+c[3]:'')+'" style="cursor:pointer">'+c[1]+(c[0]==='need'?' <i class="tip" tabindex="0" data-tip="目前命中未回覆客戶或很久沒動的負責對話數，不受分析期間影響。">i</i>':'')+'</th>').join('')+'<th></th></tr>';
   const q=$('#mq').value.trim(),d=dsel.value,s=$('#mSt').value;
   const pool=mems();
-  let r=pool.filter(m=>(!q||(m.n+m.acc).includes(q))&&(d==='all'||m.dept===d)&&(s==='all'||stOf(m)===s)).map(m=>Object.assign({m},role.c?extStat(m.n)||{}:{}));
-  const key=mKey||(role.c?'need':'use'),dir=mKey?mDir:(role.c?-1:1);
+  let r=pool.filter(m=>(!q||(m.n+m.acc).includes(q))&&(d==='all'||m.dept===d)&&(s==='all'||stOf(m)===s)).map(m=>Object.assign({m},extStat(m.n)));
+  const isE=memMode==='ext',key=mKey||(isE?'need':'use'),dir=mKey?mDir:(isE?-1:1);
   const val=x=>{const m=x.m;return key==='name'?m.n:key==='st'?['never','idle','silent','live'].indexOf(stOf(m)):key==='lt'?(m.lt==null?999:m.lt):key==='last'?(m.last==null?999:m.last):(key in m&&!(key in x))?m[key]:(x[key]==null?-1:x[key])};
-  r.sort((a,b)=>{const x=val(a),y=val(b);return (typeof x==='string'?x.localeCompare(y,'zh-Hant'):x-y)*dir||(role.c?(b.own||0)-(a.own||0):0)});
+  r.sort((a,b)=>{const x=val(a),y=val(b);return (typeof x==='string'?x.localeCompare(y,'zh-Hant'):x-y)*dir||(isE?(b.own||0)-(a.own||0):0)});
   const cell=(x,k)=>{const m=x.m;switch(k){
-    case 'name':return '<td>'+m.n+(LEFT.has(m.n)?' <span class="chip c-u">已離職</span>':'')+'<div class="em">'+m.acc+' · '+m.dept+'</div></td>';
+    case 'name':return '<td>'+m.n+(LEFT.has(m.n)?' <span class="chip c-u">已離職</span>':'')+'<div class="em">'+m.acc+' · '+(m.dept||'未指派部門')+'</div></td>';
     case 'st':return '<td><span class="chip '+({live:'c-ok',silent:'c-h',idle:'c-s',never:'c-u'})[stOf(m)]+'">'+STN[stOf(m)]+'</span></td>';
-    case 'last':return '<td class="num">'+(m.last==null?'—':fmtD(dOf(m.last)))+'</td>';
+    case 'last':return '<td class="num">'+(m.last==null?'—':ago(m.last))+'</td>';
     case 'lt':return '<td class="num">'+(m.lt==null?'—':ago(m.lt))+'</td>';
     case 'use':case 'talk':case 'cv':return '<td class="r num">'+m[k]+'</td>';
     case 'im':return '<td class="r num">'+nf(m.im)+'</td>';
-    case 'need':return '<td class="r num">'+(x.need==null?'—':x.need?'<b style="color:var(--danger)">'+x.need+'</b>':'0')+'</td>';
+    case 'need':return '<td class="r num">'+(x.need?'<b style="color:var(--danger)">'+x.need+'</b>':'0')+'</td>';
     case 'reply':return '<td class="r num">'+(x.reply==null?'—':x.reply.toFixed(1)+' 小時')+'</td>';
     case 'over':return '<td class="r num"'+(x.over>=25?' style="color:var(--danger)"':'')+'>'+(x.over==null?'—':x.over+'%')+'</td>';
     default:return '<td class="r num">'+(x[k]==null?'—':nf(x[k]))+'</td>'}};
-  $('#mBody').innerHTML=r.map(x=>'<tr data-m="'+x.m.n+'">'+cols.map(c=>cell(x,c[0])).join('')+'<td style="white-space:nowrap">'+(role.u?'<button class="lnk" data-go="int">對內對話</button>':'')+(role.c&&x.own!=null?'<button class="lnk" data-go="ext">對外對話</button>'+(x.need?'<button class="lnk" data-go="todo">待處理</button>':''):'')+'</td></tr>').join('')||'<tr><td colspan="'+(cols.length+1)+'" class="empty">沒有符合條件的成員</td></tr>';
+  $('#mBody').innerHTML=r.map(x=>'<tr data-m="'+x.m.n+'">'+cols.map(c=>cell(x,c[0])).join('')+'<td style="white-space:nowrap">'+(isE?'<button class="lnk" data-go="ext">對外對話</button>'+(x.need?'<button class="lnk" data-go="todo">待處理</button>':''):'<button class="lnk" data-go="int">對內對話</button>')+'</td></tr>').join('')||'<tr><td colspan="'+(cols.length+1)+'" class="empty">沒有符合條件的成員</td></tr>';
   $('#mCount').textContent='共 '+r.length+' 位成員';
 }
 ['#mq','#mDept','#mSt'].forEach(s=>$(s).addEventListener('input',renderMem));
+$('#memMode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;memMode=b.dataset.m;mKey='';renderMem()});
 $('#mHead').addEventListener('click',e=>{const th=e.target.closest('th[data-k]');if(!th)return;mDir=mKey===th.dataset.k?-mDir:(['name','last','lt'].includes(th.dataset.k)?1:-1);mKey=th.dataset.k;renderMem()});
 $('#mBody').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;const n=b.closest('tr').dataset.m;
   if(b.dataset.go==='todo'){go('todo');clearT();ownerF=n;$('#fSt').value='pending';renderTodo()}else toConv(b.dataset.go,n)});
@@ -782,7 +792,7 @@ function extParts(c){const kOf=i=>c.kind==='MIX'?(i%2?'其他公司 LINE WORKS':
 function renderDrawer(){
   const c=cur,isE=c.id[0]==='e',B=$('#dBody');
   $('#dName').textContent=c.name;$('#dRename').hidden=!(isE&&role.c);
-  $('#dSub').textContent=isE?(c.type+' · '+KIND[c.kind]+' · 負責人 '+c.owner+' · 最後互動 '+ago(c.idle)):(c.type+' · '+c.members.length+' 人 · 最後互動 '+ago(c.idle)+' · 唯讀');
+  $('#dSub').textContent=isE?(c.type+' · '+KIND[c.kind]+' · 負責人 '+(c.ownerDel?'帳號已刪除':c.owner)+' · 最後互動 '+ago(c.idle)):(c.type+' · '+c.members.length+' 人 · 最後互動 '+ago(c.idle)+' · 唯讀');
   $('#dChips').innerHTML=isE?sigChips(c,true)+' '+(c.status!=='none'?stHtml(c):''):(c.silent()?'<span class="chip c-s">沉默</span>':'');
   seed=c.id.length*97+c.msgs;const act=[];for(let i=0;i<10;i++){const tot=Math.max(1,Math.round(c.msgs/10*(.4+rnd()*1.2)));act.push([tot,Math.round(tot*(.35+rnd()*.3))])}
   const mx=Math.max(...act.map(a=>a[0]));
@@ -800,12 +810,12 @@ let curP='';
 function allowed(p){return [...PAGES[p][0]].some(k=>role[k])}
 function go(p){if(!allowed(p))p=defPage();curP=p;$$('#subnav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));Object.keys(PAGES).forEach(k=>$('#p-'+k).hidden=k!==p);
   $('#ptitle').textContent=PAGES[p][1];
-  $('#periodWrap').hidden=p==='set'||p==='todo';$('#liveWrap').hidden=p!=='todo';
+  $('#periodWrap').hidden=p==='set'||p==='todo';$('#updWrap').hidden=p==='set';$('#liveWrap').hidden=p!=='todo';
   renderBar(p);window.scrollTo(0,0)}
 function renderBar(p){p=p||curP;const ed=effDepts();let s='';
   if(p!=='set'){s+='<span class="scope">資料範圍：'+(role.scope==='all'?'全公司':ed.join('、'))+'</span>';
     if(ed.length>1)s+='<label class="scope">檢視 <select id="viewDept" class="osel" style="max-width:none">'+['all'].concat(ed).map(d=>'<option value="'+d+'"'+(viewDept===d?' selected':'')+'>'+(d==='all'?(role.scope==='all'?'全公司':'全部（'+ed.length+' 個部門）'):d)+'</option>').join('')+'</select></label>'}
-  else s+='<span>設定只有總管理員可以進入</span>';
+  else s+='<span>設定內容全公司共用；有設定權限的人才看得到這頁</span>';
   $('#rolebar').innerHTML=s;const v=$('#viewDept');if(v)v.onchange=()=>{viewDept=v.value;clearT();renderAll();renderBar()}}
 function defPage(){return role.u||role.c?'ov':'set'}
 $('#subnav').addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(!b)return;if(b.dataset.p==='conv')toConv(role.c&&!role.u?'ext':cvMode,'');else go(b.dataset.p)});
@@ -823,10 +833,12 @@ $('#bdays').innerHTML=[...'一二三四五六日'].map((d,i)=>'<label><input typ
 $('#ruleSet').addEventListener('submit',e=>{e.preventDefault();if($('#bhEnd').value<=$('#bhStart').value){toast('營業時段的結束時間要晚於開始時間');return}
   TH.stale=+$('#tStale').value;TH.hot=+$('#tHot').value;TH.silent=+$('#tSilent').value;TH.silentM=+$('#tSilentM').value;sigs();renderAll();toast('已儲存判斷規則，訊號已重新計算')});
 function renderBotPreview(){const mine=EXT.filter(c=>c.owner==='陳怡君'&&c.status==='pending').sort((a,b)=>b.idle-a.idle);
-  $('#bpTitle').textContent=mine.length?'你有 '+mine.length+' 個客戶對話需要回報處理狀態':'目前沒有需要回報的對話，今天不會發通知';
-  $('#bpCards').innerHTML=mine.slice(0,3).map(c=>'<div style="border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px"><div><b style="font-weight:500">'+esc(c.name)+'</b><div class="em">'+c.sig.filter(s=>s!=='H').map(s=>s==='U'?'未回覆客戶':c.idle+' 天沒動').join('、')+'</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-bp="done" data-c="'+c.id+'">已處理</button><button class="btn" data-bp="skip" data-c="'+c.id+'">不需處理</button></div></div>').join('')+(mine.length>3?'<span class="em">還有 '+(mine.length-3)+' 個，點下方按鈕查看</span>':'')}
+  $('#bpTitle').textContent=mine.length?'你有 '+mine.length+' 個客戶對話尚未回覆':'目前沒有未回覆的對話，今天不會發通知';
+  $('#bpCards').innerHTML=mine.slice(0,3).map(c=>'<div style="border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px"><div><b style="font-weight:500">'+esc(c.name)+'</b><div class="em">'+c.sig.filter(s=>s!=='H').map(s=>s==='U'?'未回覆客戶':c.idle+' 天沒動').join('、')+'</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-bp="skip" data-c="'+c.id+'">不需處理</button><span class="em">直接回覆客戶即可，訊號會自動消除</span></div></div>').join('')+(mine.length>3?'<span class="em">還有 '+(mine.length-3)+' 個，點下方按鈕查看</span>':'')}
 $('#bpCards').addEventListener('click',e=>{const b=e.target.closest('[data-bp]');if(!b)return;const c=EXT.find(x=>x.id===b.dataset.c);
-  c.status=b.dataset.bp;c.log.unshift(['10/16','陳怡君（Bot 回報）','標記為'+STL[b.dataset.bp]]);renderAll();toast('負責人已回報，對外訊號洞察頁同步更新')});
+  if(!b.dataset.ok){b.textContent='確定？不可復原';b.dataset.ok=1;return}
+  c.status='skip';c.log.unshift([NOW,'陳怡君（Bot 回報）','標記為不需處理']);renderAll();toast('負責人已標記不需處理，對外訊號洞察頁同步更新')});
+$('#manUpd').onclick=()=>{const b=$('#manUpd');b.disabled=true;b.textContent='更新中…';setTimeout(()=>{b.disabled=false;b.textContent='手動更新';$('#updTxt').textContent='資料更新至 2026/10/07 15:42';$('#setUpd').textContent='2026/10/07 15:42';toast('已補上 03:00 到現在的新對話')},1200)};
 $('#botOn').addEventListener('change',e=>{BOT.on=e.target.checked;renderAll();toast(BOT.on?'已開啟：狀態改由負責人透過 Bot 回報，清單只能查看':'已關閉：主管可在對外訊號洞察頁更新狀態')});
 applyRole();
 })();
